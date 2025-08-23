@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../ui/button";
 
 export default function MentalMathGame() {
   const [question, setQuestion] = useState(generateQuestion());
