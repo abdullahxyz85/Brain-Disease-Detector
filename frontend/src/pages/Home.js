@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import ParticlesBackground from '../components/ui/ParticlesBackground';
+import BrainAnimation from '../components/ui/BrainAnimation';
+import FloatingElements from '../components/ui/FloatingElements';
+import GradientBackground from '../components/ui/GradientBackground';
+import { AnimatedPrimaryButton, AnimatedSecondaryButton } from '../components/ui/AnimatedButtons';
 
 const HeroSection = styled.section`
-  padding: 80px 0;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 100px 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
   text-align: center;
   position: relative;
   overflow: hidden;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   @media (max-width: 768px) {
-    padding: 60px 0;
+    padding: 80px 0;
+    min-height: 60vh;
   }
 `;
 
@@ -21,82 +31,57 @@ const HeroContainer = styled.div`
   padding: 0 20px;
   position: relative;
   z-index: 2;
+  backdrop-filter: blur(3px);
+  border-radius: 20px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
 `;
 
 const HeroTitle = styled(motion.h1)`
-  font-size: 3rem;
+  font-size: 3.5rem;
   margin-bottom: 20px;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-weight: 800;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 `;
 
 const HeroSubtitle = styled(motion.p)`
-  font-size: 1.2rem;
-  color: #555;
-  max-width: 700px;
+  font-size: 1.3rem;
+  color: #444;
+  max-width: 750px;
   margin: 0 auto 40px;
+  line-height: 1.6;
+  font-weight: 400;
   
   @media (max-width: 768px) {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 `;
 
 const ButtonGroup = styled(motion.div)`
   display: flex;
   justify-content: center;
-  gap: 20px;
-  margin-top: 30px;
+  gap: 25px;
+  margin-top: 40px;
   
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 18px;
     
     a {
       width: 80%;
     }
-  }
-`;
-
-const PrimaryButton = styled(Link)`
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  padding: 12px 30px;
-  border-radius: 50px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    text-decoration: none;
-  }
-`;
-
-const SecondaryButton = styled(Link)`
-  background: transparent;
-  color: var(--primary-color);
-  padding: 12px 30px;
-  border-radius: 50px;
-  font-weight: 600;
-  text-decoration: none;
-  border: 2px solid var(--primary-color);
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background-color: var(--primary-color);
-    color: white;
-    transform: translateY(-3px);
-    text-decoration: none;
   }
 `;
 
@@ -137,45 +122,109 @@ const FeatureGrid = styled.div`
 `;
 
 const FeatureCard = styled(motion.div)`
-  background-color: white;
-  border-radius: 10px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  border-bottom: 4px solid transparent;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 35px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+  transition: all 0.5s ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  z-index: 1;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.5s ease;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    transition: width 0.5s ease;
+  }
   
   &:hover {
-    transform: translateY(-10px);
-    border-bottom: 4px solid var(--accent-color);
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    
+    &::after {
+      width: 100%;
+    }
+    
+    svg {
+      transform: scale(1.2) rotate(5deg);
+    }
   }
 `;
 
-const FeatureIcon = styled.div`
-  width: 70px;
-  height: 70px;
+const FeatureIcon = styled(motion.div)`
+  width: 80px;
+  height: 80px;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  border-radius: 50%;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(74, 111, 165, 0.2);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color), var(--primary-color));
+    border-radius: 22px;
+    background-size: 400%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+  }
+  
+  &:hover::before {
+    opacity: 1;
+    animation: gradientBorder 3s linear infinite;
+  }
+  
+  @keyframes gradientBorder {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
   
   svg {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     color: white;
+    transition: all 0.5s ease;
   }
 `;
 
-const FeatureTitle = styled.h3`
-  font-size: 1.4rem;
-  margin-bottom: 15px;
-  color: var(--text-color);
+const FeatureTitle = styled(motion.h3)`
+  font-size: 1.6rem;
+  margin-bottom: 18px;
+  color: var(--primary-color);
+  font-weight: 700;
+  transition: color 0.3s ease;
 `;
 
-const FeatureDescription = styled.p`
-  color: #666;
-  line-height: 1.6;
+const FeatureDescription = styled(motion.p)`
+  color: #555;
+  line-height: 1.7;
+  font-size: 1.05rem;
 `;
 
 const HowItWorksSection = styled.section`
@@ -321,40 +370,86 @@ const BenefitText = styled.div`
 `;
 
 const CTASection = styled.section`
-  padding: 80px 0;
+  padding: 100px 0;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: white;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: 1;
+  }
 `;
 
-const CTATitle = styled.h2`
-  font-size: 2.2rem;
-  margin-bottom: 20px;
+const CTATitle = styled(motion.h2)`
+  font-size: 2.5rem;
+  margin-bottom: 25px;
+  font-weight: 800;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 `;
 
-const CTASubtitle = styled.p`
-  font-size: 1.2rem;
-  margin-bottom: 40px;
-  max-width: 700px;
+const CTASubtitle = styled(motion.p)`
+  font-size: 1.3rem;
+  margin-bottom: 45px;
+  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
+  position: relative;
+  z-index: 2;
 `;
 
-const CTAButton = styled(Link)`
-  background-color: white;
-  color: var(--primary-color);
-  padding: 15px 40px;
-  border-radius: 50px;
-  font-weight: 600;
-  font-size: 1.1rem;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+const CTAButton = styled(motion.div)`
+  position: relative;
+  z-index: 2;
+  display: inline-block;
   
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  a {
+    background-color: white;
+    color: var(--primary-color);
+    padding: 16px 45px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.15rem;
     text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, var(--accent-color), transparent, var(--accent-color));
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
+      color: var(--primary-color);
+      text-decoration: none;
+      
+      &::before {
+        opacity: 0.2;
+      }
+    }
   }
 `;
 
@@ -362,11 +457,20 @@ const Home = () => {
   return (
     <>
       <HeroSection>
+        <ParticlesBackground />
+        <GradientBackground />
+        <FloatingElements />
+        <BrainAnimation />
+        
         <HeroContainer>
           <HeroTitle
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ 
+              duration: 0.8,
+              type: "spring",
+              stiffness: 100
+            }}
           >
             Early Detection for Better Brain Health
           </HeroTitle>
@@ -374,18 +478,28 @@ const Home = () => {
           <HeroSubtitle
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ 
+              duration: 0.7,
+              delay: 0.3,
+              type: "spring",
+              stiffness: 80
+            }}
           >
-            Our interactive platform helps detect early signs of cognitive decline through engaging games, quizzes, and speech analysis.
+            Our interactive platform helps detect early signs of cognitive decline through engaging games, quizzes, and speech analysis. Start your brain health journey today.
           </HeroSubtitle>
           
           <ButtonGroup
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ 
+              duration: 0.7,
+              delay: 0.6,
+              type: "spring",
+              stiffness: 70
+            }}
           >
-            <PrimaryButton to="/games">Try Cognitive Games</PrimaryButton>
-            <SecondaryButton to="/resources">Learn More</SecondaryButton>
+            <AnimatedPrimaryButton to="/games">Try Cognitive Games</AnimatedPrimaryButton>
+            <AnimatedSecondaryButton to="/resources">Learn More</AnimatedSecondaryButton>
           </ButtonGroup>
         </HeroContainer>
       </HeroSection>
@@ -396,74 +510,192 @@ const Home = () => {
           
           <FeatureGrid>
             <FeatureCard
-              whileHover={{ y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
+              whileHover={{ scale: 1.02 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ 
+                duration: 0.8,
+                type: "spring",
+                stiffness: 50
+              }}
             >
-              <FeatureIcon>
+              <FeatureIcon
+                whileHover={{ rotate: 5 }}
+                animate={{ 
+                  boxShadow: ["0 10px 20px rgba(74, 111, 165, 0.2)", "0 10px 20px rgba(74, 111, 165, 0.4)", "0 10px 20px rgba(74, 111, 165, 0.2)"]
+                }}
+                transition={{
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse"
+                  }
+                }}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
                 </svg>
               </FeatureIcon>
-              <FeatureTitle>Cognitive Games</FeatureTitle>
-              <FeatureDescription>
-                Engage in interactive games designed to test memory, reaction time, problem-solving, and spatial skills.
+              <FeatureTitle
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                Cognitive Games
+              </FeatureTitle>
+              <FeatureDescription
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                Engage in interactive games designed to test memory, reaction time, problem-solving, and spatial skills. These fun activities help measure cognitive abilities.
               </FeatureDescription>
             </FeatureCard>
             
             <FeatureCard
-              whileHover={{ y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
+              whileHover={{ scale: 1.02 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ 
+                duration: 0.8,
+                type: "spring",
+                stiffness: 50,
+                delay: 0.2
+              }}
             >
-              <FeatureIcon>
+              <FeatureIcon
+                whileHover={{ rotate: 5 }}
+                animate={{ 
+                  boxShadow: ["0 10px 20px rgba(74, 111, 165, 0.2)", "0 10px 20px rgba(74, 111, 165, 0.4)", "0 10px 20px rgba(74, 111, 165, 0.2)"]
+                }}
+                transition={{
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    delay: 0.5
+                  }
+                }}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </FeatureIcon>
-              <FeatureTitle>Cognitive Quizzes</FeatureTitle>
-              <FeatureDescription>
-                Answer questions that evaluate temporal orientation, semantic memory, reasoning, and logic.
+              <FeatureTitle
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                Cognitive Quizzes
+              </FeatureTitle>
+              <FeatureDescription
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
+                Answer questions that evaluate temporal orientation, semantic memory, reasoning, and logic. Our specialized quizzes provide insight into your cognitive functions.
               </FeatureDescription>
             </FeatureCard>
             
             <FeatureCard
-              whileHover={{ y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
+              whileHover={{ scale: 1.02 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ 
+                duration: 0.8,
+                type: "spring",
+                stiffness: 50,
+                delay: 0.4
+              }}
             >
-              <FeatureIcon>
+              <FeatureIcon
+                whileHover={{ rotate: 5 }}
+                animate={{ 
+                  boxShadow: ["0 10px 20px rgba(74, 111, 165, 0.2)", "0 10px 20px rgba(74, 111, 165, 0.4)", "0 10px 20px rgba(74, 111, 165, 0.2)"]
+                }}
+                transition={{
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    delay: 1
+                  }
+                }}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
               </FeatureIcon>
-              <FeatureTitle>Speech Analysis</FeatureTitle>
-              <FeatureDescription>
-                Record your voice describing an image or daily routine for AI-powered language pattern analysis.
+              <FeatureTitle
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
+                Speech Analysis
+              </FeatureTitle>
+              <FeatureDescription
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.9 }}
+              >
+                Record your voice describing an image or daily routine for AI-powered language pattern analysis. Changes in speech can be early indicators of cognitive changes.
               </FeatureDescription>
             </FeatureCard>
             
             <FeatureCard
-              whileHover={{ y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
+              whileHover={{ scale: 1.02 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ 
+                duration: 0.8,
+                type: "spring",
+                stiffness: 50,
+                delay: 0.6
+              }}
             >
-              <FeatureIcon>
+              <FeatureIcon
+                whileHover={{ rotate: 5 }}
+                animate={{ 
+                  boxShadow: ["0 10px 20px rgba(74, 111, 165, 0.2)", "0 10px 20px rgba(74, 111, 165, 0.4)", "0 10px 20px rgba(74, 111, 165, 0.2)"]
+                }}
+                transition={{
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    delay: 1.5
+                  }
+                }}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </FeatureIcon>
-              <FeatureTitle>AI Feedback</FeatureTitle>
-              <FeatureDescription>
-                Receive personalized recommendations based on your performance across different cognitive assessments.
+              <FeatureTitle
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.9 }}
+              >
+                AI Feedback
+              </FeatureTitle>
+              <FeatureDescription
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 1.1 }}
+              >
+                Receive personalized recommendations based on your performance across different cognitive assessments. Get actionable insights to improve your brain health.
               </FeatureDescription>
             </FeatureCard>
           </FeatureGrid>
@@ -599,10 +831,48 @@ const Home = () => {
       </BenefitsSection>
       
       <CTASection>
+        <FloatingElements />
         <FeaturesContainer>
-          <CTATitle>Ready to Assess Your Cognitive Health?</CTATitle>
-          <CTASubtitle>Start with our interactive games and get personalized insights about your brain health.</CTASubtitle>
-          <CTAButton to="/games">Get Started Now</CTAButton>
+          <CTATitle
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ 
+              duration: 0.7,
+              type: "spring",
+              stiffness: 50
+            }}
+          >
+            Ready to Assess Your Cognitive Health?
+          </CTATitle>
+          <CTASubtitle
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ 
+              duration: 0.7,
+              delay: 0.3,
+              type: "spring",
+              stiffness: 50
+            }}
+          >
+            Start with our interactive games and get personalized insights about your brain health. Early detection is key to maintaining cognitive wellness.
+          </CTASubtitle>
+          <CTAButton
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ 
+              duration: 0.7,
+              delay: 0.6,
+              type: "spring",
+              stiffness: 50
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Link to="/games">Get Started Now</Link>
+          </CTAButton>
         </FeaturesContainer>
       </CTASection>
     </>

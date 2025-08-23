@@ -6,12 +6,22 @@
 
 :root {
   --primary-color: #4a6fa5;
-  --secondary-color: #6fbfbf;
-  --accent-color: #f9a826;
-  --background-color: #f8f9fa;
-  --text-color: #333;
-  --card-color: #fff;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --secondary-color: #20adfd;
+  --accent-color: #f99777;
+  --accent-color-light: #ffd0b6;
+  --gradient-primary: linear-gradient(135deg, #4a6fa5 0%, #20adfd 100%);
+  --gradient-accent: linear-gradient(135deg, #f99777 0%, #f9c677 100%);
+  --background-color: #f5f7fa;
+  --text-color: #2d3748;
+  --text-color-light: #4a5568;
+  --card-color: #ffffff;
+  --card-color-alt: #f0f4f8;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --shadow-accent: 0 10px 20px rgba(249, 151, 119, 0.2);
+  --shadow-primary: 0 10px 20px rgba(74, 111, 165, 0.2);
 }
 
 body {
