@@ -45,3 +45,8 @@ yarn-error.log*
 
 # Yarn Integrity file
 .yarn-integrity
+
+# Deployment Build
+.vercel
+frontend/vercel.json
+frontend/build.sh
