@@ -131,7 +131,11 @@ const FeatureCard = styled(motion.div)`
   overflow: hidden;
   backdrop-filter: blur(5px);
   z-index: 1;
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
   &::before {
     content: '';
     position: absolute;
@@ -144,7 +148,7 @@ const FeatureCard = styled(motion.div)`
     z-index: -1;
     transition: opacity 0.5s ease;
   }
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -155,18 +159,50 @@ const FeatureCard = styled(motion.div)`
     background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
     transition: width 0.5s ease;
   }
-  
+
   &:hover {
     transform: translateY(-15px) scale(1.03);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-    
+
     &::after {
       width: 100%;
     }
-    
+
     svg {
       transform: scale(1.2) rotate(5deg);
     }
+  }
+
+  .feature-btn {
+    margin-top: 32px;
+    align-self: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .feature-btn .animated-primary-btn {
+    background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.18rem;
+    border-radius: 999px;
+    padding: 18px 0;
+    width: 90%;
+    max-width: 270px;
+    box-shadow: 0 8px 18px rgba(37,99,235,0.10);
+    margin: 0 auto;
+    text-align: center;
+    letter-spacing: 0.5px;
+    border: none;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    display: block;
+  }
+  .feature-btn .animated-primary-btn:hover {
+    background: linear-gradient(90deg, #1e40af 0%, #0ea5e9 100%);
+    box-shadow: 0 12px 24px rgba(37,99,235,0.16);
+    color: #fff;
+    transform: translateY(-2px) scale(1.03);
   }
 `;
 
@@ -553,6 +589,9 @@ const Home = () => {
               >
                 Engage in interactive games designed to test memory, reaction time, problem-solving, and spatial skills. These fun activities help measure cognitive abilities.
               </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/games" className="animated-primary-btn">Explore Games</AnimatedPrimaryButton>
+              </div>
             </FeatureCard>
             
             <FeatureCard
@@ -601,6 +640,9 @@ const Home = () => {
               >
                 Answer questions that evaluate temporal orientation, semantic memory, reasoning, and logic. Our specialized quizzes provide insight into your cognitive functions.
               </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/quiz" className="animated-primary-btn">Take a Quiz</AnimatedPrimaryButton>
+              </div>
             </FeatureCard>
             
             <FeatureCard
@@ -649,6 +691,9 @@ const Home = () => {
               >
                 Record your voice describing an image or daily routine for AI-powered language pattern analysis. Changes in speech can be early indicators of cognitive changes.
               </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/speech" className="animated-primary-btn">Try Speech Analysis</AnimatedPrimaryButton>
+              </div>
             </FeatureCard>
             
             <FeatureCard
@@ -697,6 +742,61 @@ const Home = () => {
               >
                 Receive personalized recommendations based on your performance across different cognitive assessments. Get actionable insights to improve your brain health.
               </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/results" className="animated-primary-btn">View Results</AnimatedPrimaryButton>
+              </div>
+            </FeatureCard>
+            
+            <FeatureCard
+              whileHover={{ scale: 1.02 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ 
+                duration: 0.8,
+                type: "spring",
+                stiffness: 50,
+                delay: 2
+              }}
+            >
+              <FeatureIcon
+                whileHover={{ rotate: 5 }}
+                animate={{ 
+                  boxShadow: ["0 10px 20px rgba(37, 99, 235, 0.15)", "0 10px 20px rgba(56, 189, 248, 0.18)", "0 10px 20px rgba(37, 99, 235, 0.15)"]
+                }}
+                transition={{
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    delay: 2.5
+                  }
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <circle cx="12" cy="12" r="9" strokeWidth="2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 15c1.333-2 6.667-2 8 0M9 10h.01M15 10h.01" />
+                </svg>
+              </FeatureIcon>
+              <FeatureTitle
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 2.1 }}
+              >
+                MRI Disease Detector
+              </FeatureTitle>
+              <FeatureDescription
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 2.2 }}
+              >
+                Upload a brain MRI (RMN) scan and let our AI analyze it for signs of Alzheimer’s or dementia. Fast, private, and easy to use.
+              </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/mri-detector" className="animated-primary-btn">Analyze MRI</AnimatedPrimaryButton>
+              </div>
             </FeatureCard>
           </FeatureGrid>
         </FeaturesContainer>
@@ -858,21 +958,7 @@ const Home = () => {
           >
             Start with our interactive games and get personalized insights about your brain health. Early detection is key to maintaining cognitive wellness.
           </CTASubtitle>
-          <CTAButton
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ 
-              duration: 0.7,
-              delay: 0.6,
-              type: "spring",
-              stiffness: 50
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Link to="/games">Get Started Now</Link>
-          </CTAButton>
+          <AnimatedPrimaryButton to="/games">Get Started Now</AnimatedPrimaryButton>
         </FeaturesContainer>
       </CTASection>
     </>

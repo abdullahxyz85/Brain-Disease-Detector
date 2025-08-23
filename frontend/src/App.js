@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
+import ScrollToTop from './components/layout/ScrollToTop';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import CognitiveGames from './pages/CognitiveGames';
@@ -12,6 +13,7 @@ import CognitiveQuiz from './pages/CognitiveQuiz';
 import SpeechAnalysis from './pages/SpeechAnalysis';
 import Resources from './pages/Resources';
 import ResultsDashboard from './components/results/ResultsDashboard';
+import MRIDetector from './pages/MRIDetector';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import ForgotPassword from './components/auth/ForgotPassword';
@@ -24,6 +26,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <div className="app">
           <Navbar />
           <main className="main-content">
@@ -45,6 +48,7 @@ function App() {
                   <ResultsDashboard />
                 </PrivateRoute>
               } />
+              <Route path="/mri-detector" element={<MRIDetector />} />
             </Routes>
           </main>
           <Footer />
