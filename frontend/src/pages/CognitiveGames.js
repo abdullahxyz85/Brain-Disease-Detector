@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+
+import MentalCalculationGame from '../components/games/MentalCalculationGame';
 
 const PageContainer = styled.div`
   max-width: 1200px;
@@ -130,7 +132,9 @@ const InfoSection = styled.div`
   }
 `;
 
+
 const CognitiveGames = () => {
+  const [showCalcGame, setShowCalcGame] = useState(false);
   const games = [
     {
       id: 'memory',
@@ -175,6 +179,18 @@ const CognitiveGames = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
         </svg>
       )
+    },
+    {
+      id: 'mental-calc',
+      title: 'Mental Calculation',
+      description: 'Sharpen your arithmetic skills with fast-paced mental math challenges!',
+      difficulty: 'All',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6M9 12h6M9 17h6M5 7h.01M5 12h.01M5 17h.01" />
+        </svg>
+      ),
+      onClick: () => setShowCalcGame(true)
     }
   ];
 
@@ -190,11 +206,13 @@ const CognitiveGames = () => {
       
       <GamesGrid>
         {games.map((game, index) => (
-          <GameCard 
+          <GameCard
             key={game.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
+            style={game.id === 'mental-calc' ? { cursor: 'pointer' } : {}}
+            onClick={game.onClick}
           >
             <GameImageContainer>
               {game.icon}
@@ -205,12 +223,43 @@ const CognitiveGames = () => {
             <GameContent>
               <GameTitle>{game.title}</GameTitle>
               <GameDescription>{game.description}</GameDescription>
-              <GameLink to={`/games/${game.id}`}>Play Now</GameLink>
+              {game.id === 'mental-calc' ? (
+                <GameLink
+                  as="button"
+                  type="button"
+                  onClick={e => { e.stopPropagation(); setShowCalcGame(true); }}
+                  style={{ width: 'auto' }}
+                >
+                  Play Now
+                </GameLink>
+              ) : (
+                <GameLink to={`/games/${game.id}`}>Play Now</GameLink>
+              )}
             </GameContent>
           </GameCard>
         ))}
       </GamesGrid>
       
+      {showCalcGame && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.35)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }} onClick={() => setShowCalcGame(false)}>
+          <div style={{ position: 'relative', zIndex: 1001 }} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowCalcGame(false)} style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: '#888' }}>&times;</button>
+            <MentalCalculationGame />
+          </div>
+        </div>
+      )}
+
       <InfoSection>
         <h2>Why Cognitive Games Matter</h2>
         <p>
