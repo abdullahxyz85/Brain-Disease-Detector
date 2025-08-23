@@ -228,7 +228,7 @@ const AssessmentCard = styled.div`
 
 // This is a template for any quiz type - we'd create specific ones for each cognitive area
 const TemporalQuiz = ({ onBack }) => {
-  const [questions, setQuestions] = useState([
+  const [questions] = useState([
     {
       id: 1,
       text: "Which day of the week was yesterday?",

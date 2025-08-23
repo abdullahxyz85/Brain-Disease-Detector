@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -306,7 +306,7 @@ const MemoryGame = () => {
   // Send results to backend for processing
   const sendResults = async (stats) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/game/memory', {
+      await axios.post('http://localhost:8000/api/game/memory', {
         score,
         level,
         rounds: round,
