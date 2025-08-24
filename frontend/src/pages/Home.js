@@ -888,7 +888,7 @@ const Home = () => {
                 Upload a brain MRI (RMN) scan and let our AI analyze it for signs of Alzheimer’s or dementia. Fast, private, and easy to use.
               </FeatureDescription>
               <div className="feature-btn">
-                <AnimatedPrimaryButton to="/mri-detector" className="animated-primary-btn">Analyze MRI</AnimatedPrimaryButton>
+                <AnimatedPrimaryButton to="/alzheimer-detector" className="animated-primary-btn">Analyze MRI</AnimatedPrimaryButton>
               </div>
             </FeatureCard>
           </FeatureGrid>

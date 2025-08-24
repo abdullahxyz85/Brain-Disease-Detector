@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from "react";
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
+// Make sure these labels match the ONNX model output order
+const LABELS = [
+  "Mild Demented",
+  "Moderate Demented", 
+  "Non Demented",
+  "Very Mild Demented"
+];
+const MEAN = [0.485, 0.456, 0.406];
+const STD = [0.229, 0.224, 0.225];
+
 const PageContainer = styled.div`
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 40px 20px;
-  min-height: 80vh;
+  font-family: 'Poppins', sans-serif;
 `;
 
 const PageHeader = styled.div`
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
   
   h1 {
     font-size: 2.5rem;
@@ -28,60 +38,39 @@ const PageHeader = styled.div`
   }
 `;
 
-const ContentSection = styled(motion.div)`
+const UploadSection = styled(motion.div)`
   background-color: white;
   border-radius: 20px;
-  padding: 40px;
+  padding: 30px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
-`;
-
-const FeatureGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin-top: 40px;
-`;
-
-const FeatureCard = styled(motion.div)`
-  background-color: #f8f9fa;
-  border-radius: 15px;
-  padding: 30px;
+  border: 2px dashed #e1e5e9;
   text-align: center;
-  
-  h3 {
-    color: var(--primary-color);
-    margin-bottom: 15px;
-    font-size: 1.3rem;
-  }
-  
-  p {
-    color: #666;
-    line-height: 1.6;
-  }
-  
-  svg {
-    width: 60px;
-    height: 60px;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-  }
 `;
 
-const ActionButton = styled(motion.button)`
+const FileInput = styled.input`
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 300px;
+`;
+
+const PredictButton = styled(motion.button)`
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   color: white;
   border: none;
-  padding: 15px 30px;
+  padding: 12px 25px;
   border-radius: 50px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  margin-left: 15px;
   
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   }
   
   &:disabled {
@@ -91,144 +80,303 @@ const ActionButton = styled(motion.button)`
   }
 `;
 
-const StatusMessage = styled.div`
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-  font-weight: 600;
+const PreviewSection = styled.div`
+  display: flex;
+  gap: 30px;
+  margin-top: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
   
-  &.info {
-    background-color: #e3f2fd;
-    color: #1976d2;
-  }
-  
-  &.warning {
-    background-color: #fff3e0;
-    color: #f57c00;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
   }
 `;
 
-const AlzheimerDetector = () => {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [status, setStatus] = useState('');
+const ImageContainer = styled.div`
+  text-align: center;
+  
+  h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+  }
+  
+  img, canvas {
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+`;
 
-  const handleStartAnalysis = () => {
-    setIsAnalyzing(true);
-    setStatus('This feature is currently under development. Advanced AI-powered Alzheimer detection will be available soon.');
+const ResultsSection = styled(motion.div)`
+  background-color: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+  
+  h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+`;
+
+const ProbabilityList = styled.ul`
+  list-style: none;
+  padding: 0;
+  
+  li {
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--primary-color);
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
     
-    // Simulate analysis
-    setTimeout(() => {
+    &:first-child {
+      background-color: #e8f5e8;
+      border-left-color: #28a745;
+      font-weight: 600;
+    }
+  }
+`;
+
+const DisclaimerSection = styled.div`
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 15px;
+  padding: 25px;
+  margin-top: 30px;
+  
+  h4 {
+    color: #856404;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+  }
+  
+  p {
+    color: #856404;
+    margin: 0;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+`;
+
+const ErrorMessage = styled.div`
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  text-align: center;
+`;
+
+export default function AlzheimerDetector() {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [output, setOutput] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef();
+  const previewRef = useRef();
+  const canvasRef = useRef();
+
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Reset states
+    setOutput("");
+    setError("");
+    
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    setImageLoaded(false);
+  }
+
+  function handleImageLoad() {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 224, 224);
+    ctx.drawImage(previewRef.current, 0, 0, 224, 224);
+    setImageLoaded(true);
+  }
+
+  function softmax(arr) {
+    const max = Math.max(...arr);
+    const exps = arr.map(v => Math.exp(v - max));
+    const sum = exps.reduce((a, b) => a + b, 0);
+    return exps.map(v => v / sum);
+  }
+
+  function preprocess() {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const { data } = ctx.getImageData(0, 0, 224, 224);
+    const chw = new Float32Array(1 * 3 * 224 * 224);
+    let idx = 0;
+    const stride = 224 * 224;
+    for (let y = 0; y < 224; y++) {
+      for (let x = 0; x < 224; x++) {
+        const p = (y * 224 + x) * 4;
+        const r = data[p] / 255, g = data[p + 1] / 255, b = data[p + 2] / 255;
+        chw[0 * stride + idx] = (r - MEAN[0]) / STD[0];
+        chw[1 * stride + idx] = (g - MEAN[1]) / STD[1];
+        chw[2 * stride + idx] = (b - MEAN[2]) / STD[2];
+        idx++;
+      }
+    }
+    return chw;
+  }
+
+  async function handlePredict() {
+    if (!imageLoaded) {
+      setError("Please upload a brain MRI image first.");
+      return;
+    }
+    
+    if (!window.ort) {
+      setError("ONNX Runtime is not loaded. Please refresh the page and try again.");
+      return;
+    }
+    
+    setIsAnalyzing(true);
+    setError("");
+    setOutput("");
+    
+    try {
+      const tensor = new window.ort.Tensor("float32", preprocess(), [1, 3, 224, 224]);
+      let session;
+      
+      try {
+        session = await window.ort.InferenceSession.create("/alzheimer.onnx", { executionProviders: ["webgpu"] });
+      } catch {
+        try {
+          session = await window.ort.InferenceSession.create("/alzheimer.onnx", { executionProviders: ["webgl"] });
+        } catch {
+          session = await window.ort.InferenceSession.create("/alzheimer.onnx");
+        }
+      }
+      
+      const results = await session.run({ input: tensor });
+      
+      if (!results || Object.keys(results).length === 0) {
+        setError("No output from model. Please check the model file.");
+        return;
+      }
+      
+      // Try to find the output key dynamically
+      const outputKey = Object.keys(results)[0];
+      const logits = results[outputKey].data;
+      const probs = softmax(Array.from(logits));
+      const sorted = probs.map((p, i) => ({ label: LABELS[i], p })).sort((a, b) => b.p - a.p);
+      
+      setOutput(sorted);
+      
+    } catch (err) {
+      console.error("Prediction error:", err);
+      setError("Error analyzing image: " + err.message);
+    } finally {
       setIsAnalyzing(false);
-    }, 2000);
-  };
+    }
+  }
 
   return (
     <PageContainer>
       <PageHeader>
-        <h1>Alzheimer Detection System</h1>
+        <h1>🧠 Alzheimer Detection System</h1>
         <p>
-          Advanced AI-powered analysis for early detection of Alzheimer's disease through 
-          cognitive assessments, speech patterns, and behavioral indicators.
+          Upload a brain MRI scan for AI-powered analysis. Our advanced machine learning model 
+          can help identify potential signs of cognitive decline.
         </p>
       </PageHeader>
 
-      <ContentSection
-        initial={{ opacity: 0, y: 30 }}
+      <UploadSection
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h2 style={{ color: 'var(--primary-color)', marginBottom: '20px', textAlign: 'center' }}>
-          How It Works
-        </h2>
-        <p style={{ color: '#666', textAlign: 'center', marginBottom: '30px' }}>
-          Our advanced detection system combines multiple assessment methods to provide 
-          comprehensive cognitive health insights.
-        </p>
-        
-        <FeatureGrid>
-          <FeatureCard
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-            <h3>Cognitive Assessment</h3>
-            <p>
-              Comprehensive cognitive tests that evaluate memory, attention, 
-              language, and executive function capabilities.
-            </p>
-          </FeatureCard>
-
-          <FeatureCard
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-            </svg>
-            <h3>Speech Analysis</h3>
-            <p>
-              Advanced analysis of speech patterns, fluency, and linguistic 
-              features that may indicate cognitive changes.
-            </p>
-          </FeatureCard>
-
-          <FeatureCard
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <h3>AI Analysis</h3>
-            <p>
-              Machine learning algorithms trained on extensive datasets to 
-              identify subtle patterns associated with early cognitive decline.
-            </p>
-          </FeatureCard>
-        </FeatureGrid>
-
-        <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <ActionButton
-            onClick={handleStartAnalysis}
-            disabled={isAnalyzing}
+        <h3 style={{ color: 'var(--primary-color)', marginBottom: '20px' }}>
+          Upload Brain MRI Image
+        </h3>
+        <div>
+          <FileInput
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
+          <PredictButton 
+            onClick={handlePredict}
+            disabled={!imageLoaded || isAnalyzing}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {isAnalyzing ? 'Analyzing...' : 'Start Assessment'}
-          </ActionButton>
-          
-          {status && (
-            <StatusMessage className="info">
-              {status}
-            </StatusMessage>
-          )}
+            {isAnalyzing ? 'Analyzing...' : 'Analyze Image'}
+          </PredictButton>
         </div>
-      </ContentSection>
+      </UploadSection>
 
-      <ContentSection
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-      >
-        <h2 style={{ color: 'var(--primary-color)', marginBottom: '20px' }}>
-          Important Notice
-        </h2>
-        <div style={{ backgroundColor: '#fff3cd', padding: '20px', borderRadius: '10px', border: '1px solid #ffeaa7' }}>
-          <p style={{ color: '#856404', margin: 0, fontWeight: '600' }}>
-            <strong>Disclaimer:</strong> This tool is designed for educational and screening purposes only. 
-            It is not a substitute for professional medical diagnosis. If you have concerns about 
-            cognitive health, please consult with a qualified healthcare professional.
-          </p>
-        </div>
-      </ContentSection>
+      {previewUrl && (
+        <PreviewSection>
+          <ImageContainer>
+            <h3>Original Image</h3>
+            <img
+              ref={previewRef}
+              src={previewUrl}
+              width={224}
+              height={224}
+              alt="Brain MRI"
+              onLoad={handleImageLoad}
+            />
+          </ImageContainer>
+          <ImageContainer>
+            <h3>Processed Image</h3>
+            <canvas
+              ref={canvasRef}
+              width={224}
+              height={224}
+            />
+          </ImageContainer>
+        </PreviewSection>
+      )}
+
+      {error && (
+        <ErrorMessage>
+          {error}
+        </ErrorMessage>
+      )}
+
+      {output && Array.isArray(output) && (
+        <ResultsSection
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h3>Analysis Results</h3>
+          <ProbabilityList>
+            {output.map((result, index) => (
+              <li key={index}>
+                <span>{result.label}</span>
+                <span>{(result.p * 100).toFixed(2)}%</span>
+              </li>
+            ))}
+          </ProbabilityList>
+        </ResultsSection>
+      )}
+
+      <DisclaimerSection>
+        <h4>⚠️ Important Medical Disclaimer</h4>
+        <p>
+          This tool is for educational and research purposes only. It should NOT be used for actual medical diagnosis. 
+          The results are not a substitute for professional medical advice, diagnosis, or treatment. 
+          Always consult with qualified healthcare professionals for any health concerns or before making medical decisions.
+        </p>
+      </DisclaimerSection>
     </PageContainer>
   );
-};
-
-export default AlzheimerDetector;
+}
