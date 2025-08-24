@@ -51,22 +51,171 @@ const HeroTitle = styled(motion.h1)`
   text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   
   @media (max-width: 768px) {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 2rem;
   }
 `;
 
 const HeroSubtitle = styled(motion.p)`
   font-size: 1.3rem;
-  color: #444;
-  max-width: 750px;
-  margin: 0 auto 40px;
+  color: #555;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
   line-height: 1.6;
-  font-weight: 400;
+  font-weight: 300;
   
   @media (max-width: 768px) {
     font-size: 1.1rem;
+    margin-bottom: 30px;
   }
 `;
+
+const StatisticsSection = styled.section`
+  padding: 80px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+`;
+
+const StatisticsContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+`;
+
+const StatisticsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-top: 60px;
+`;
+
+const StatItem = styled(motion.div)`
+  text-align: center;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const StatNumber = styled.div`
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #fff;
+`;
+
+const StatLabel = styled.div`
+  font-size: 1.1rem;
+  opacity: 0.9;
+`;
+
+const TestimonialsSection = styled.section`
+  padding: 80px 0;
+  background: #f8f9fa;
+`;
+
+const TestimonialsContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+`;
+
+const TestimonialsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 60px;
+`;
+
+const TestimonialCard = styled(motion.div)`
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+
+  &:before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 30px;
+    font-size: 5rem;
+    color: var(--primary-color);
+    font-family: serif;
+  }
+`;
+
+const TestimonialText = styled.p`
+  font-style: italic;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: #555;
+`;
+
+const TestimonialAuthor = styled.div`
+  font-weight: bold;
+  color: var(--primary-color);
+`;
+
+const TechnologySection = styled.section`
+  padding: 80px 0;
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  color: white;
+`;
+
+const TechnologyContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+`;
+
+const TechnologyGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  margin-top: 60px;
+`;
+
+const TechnologyCard = styled(motion.div)`
+  text-align: center;
+  padding: 40px 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-10px);
+  }
+`;
+
+const TechnologyIcon = styled.div`
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #fff;
+`;
+
+const TechnologyTitle = styled.h3`
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  color: #fff;
+`;
+
+const TechnologyDescription = styled.p`
+  opacity: 0.9;
+  line-height: 1.6;
+`;
+
+// This was a duplicate declaration of HeroSubtitle that was causing compile errors
+// Removed duplicate declaration
 
 const ButtonGroup = styled(motion.div)`
   display: flex;
@@ -930,6 +1079,152 @@ const Home = () => {
           </BenefitContainer>
         </FeaturesContainer>
       </BenefitsSection>
+      
+      <StatisticsSection>
+        <StatisticsContainer>
+          <SectionTitle style={{ color: 'white' }}>Brain Health by the Numbers</SectionTitle>
+          <StatisticsGrid>
+            <StatItem
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <StatNumber>55M+</StatNumber>
+              <StatLabel>People worldwide living with dementia</StatLabel>
+            </StatItem>
+            <StatItem
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <StatNumber>6.7M</StatNumber>
+              <StatLabel>Americans living with Alzheimer's</StatLabel>
+            </StatItem>
+            <StatItem
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <StatNumber>90%</StatNumber>
+              <StatLabel>Success rate with early intervention</StatLabel>
+            </StatItem>
+            <StatItem
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <StatNumber>12</StatNumber>
+              <StatLabel>Comprehensive cognitive assessments</StatLabel>
+            </StatItem>
+          </StatisticsGrid>
+        </StatisticsContainer>
+      </StatisticsSection>
+
+      <TechnologySection>
+        <TechnologyContainer>
+          <SectionTitle style={{ color: 'white' }}>Advanced Technology for Brain Health</SectionTitle>
+          <TechnologyGrid>
+            <TechnologyCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <TechnologyIcon>🧠</TechnologyIcon>
+              <TechnologyTitle>AI-Powered Analysis</TechnologyTitle>
+              <TechnologyDescription>
+                Our advanced AI algorithms analyze cognitive patterns and provide personalized insights about brain health.
+              </TechnologyDescription>
+            </TechnologyCard>
+            
+            <TechnologyCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <TechnologyIcon>📊</TechnologyIcon>
+              <TechnologyTitle>Real-time Monitoring</TechnologyTitle>
+              <TechnologyDescription>
+                Track cognitive performance over time with detailed analytics and progress reports.
+              </TechnologyDescription>
+            </TechnologyCard>
+            
+            <TechnologyCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <TechnologyIcon>🎯</TechnologyIcon>
+              <TechnologyTitle>Personalized Assessments</TechnologyTitle>
+              <TechnologyDescription>
+                Adaptive testing that adjusts difficulty based on individual performance and capabilities.
+              </TechnologyDescription>
+            </TechnologyCard>
+            
+            <TechnologyCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <TechnologyIcon>🔒</TechnologyIcon>
+              <TechnologyTitle>Secure & Private</TechnologyTitle>
+              <TechnologyDescription>
+                Enterprise-grade security ensures your health data remains completely private and protected.
+              </TechnologyDescription>
+            </TechnologyCard>
+          </TechnologyGrid>
+        </TechnologyContainer>
+      </TechnologySection>
+
+      <TestimonialsSection>
+        <TestimonialsContainer>
+          <SectionTitle>What Our Users Say</SectionTitle>
+          <TestimonialsGrid>
+            <TestimonialCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <TestimonialText>
+                The cognitive games helped me identify subtle changes in my memory. Early detection allowed me to seek proper medical care and start interventions that have made a real difference.
+              </TestimonialText>
+              <TestimonialAuthor>- Sarah M., Age 67</TestimonialAuthor>
+            </TestimonialCard>
+            
+            <TestimonialCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <TestimonialText>
+                As a healthcare professional, I recommend this platform to my patients. The assessments are scientifically sound and provide valuable insights for early intervention.
+              </TestimonialText>
+              <TestimonialAuthor>- Dr. Michael Chen, Neurologist</TestimonialAuthor>
+            </TestimonialCard>
+            
+            <TestimonialCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <TestimonialText>
+                The variety of cognitive assessments is impressive. It's engaging, user-friendly, and provides comprehensive feedback about brain health that I can share with my doctor.
+              </TestimonialText>
+              <TestimonialAuthor>- Jennifer L., Age 58</TestimonialAuthor>
+            </TestimonialCard>
+          </TestimonialsGrid>
+        </TestimonialsContainer>
+      </TestimonialsSection>
       
       <CTASection>
         <FloatingElements />

@@ -21,7 +21,6 @@ import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import ForgotPassword from './components/auth/ForgotPassword';
 import PrivateRoute from './components/auth/PrivateRoute';
-import AuthStatusIndicator from './components/auth/AuthStatusIndicator';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
 
@@ -57,7 +56,6 @@ function App() {
             </Routes>
           </main>
           <Footer />
-          <AuthStatusIndicator />
           <FloatingChatbot />
         </div>
       </Router>

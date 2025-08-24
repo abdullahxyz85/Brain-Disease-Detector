@@ -5,8 +5,15 @@ import axios from 'axios';
 
 const GameContainer = styled.div`
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 40px 30px;
+  background-color: #1e1e2f;
+  color: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  max-height: 90vh;
 `;
 
 const GameHeader = styled.div`
@@ -17,23 +24,26 @@ const GameHeader = styled.div`
     font-size: 2.5rem;
     color: var(--primary-color);
     margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
   
   p {
-    color: #666;
+    color: #e0e0e0;
     font-size: 1.1rem;
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto;
+    line-height: 1.6;
   }
 `;
 
 const GameArea = styled.div`
   position: relative;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 35px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const PuzzleContainer = styled.div`
@@ -41,17 +51,19 @@ const PuzzleContainer = styled.div`
 `;
 
 const PuzzleInstruction = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   
   h3 {
     font-size: 1.3rem;
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-weight: 600;
   }
   
   p {
-    color: #333;
+    color: #e0e0e0;
     font-size: 1.1rem;
+    line-height: 1.5;
   }
 `;
 
@@ -94,11 +106,13 @@ const Shape = styled(motion.div)`
 const PatternContainer = styled.div`
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 20px;
   margin: 40px 0;
-  padding: 20px;
-  background-color: #f5f5f5;
+  padding: 25px;
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 `;
 
 const PatternShape = styled.div`
@@ -117,28 +131,38 @@ const PatternShape = styled.div`
 const QuestionMark = styled.div`
   width: 60px;
   height: 60px;
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.15);
   border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  color: #333;
-  border: 2px dashed #999;
+  font-size: 2.2rem;
+  color: #e0e0e0;
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
 `;
 
 const ProgressBar = styled.div`
   width: 100%;
-  height: 8px;
-  background-color: #e0e0e0;
-  border-radius: 4px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
   margin: 30px 0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
   
   .progress {
     height: 100%;
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    border-radius: 4px;
-    transition: width 0.3s ease;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 `;
 
