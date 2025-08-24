@@ -284,7 +284,19 @@ const SpeechAnalysis = () => {
       id: 3,
       title: "Describe This Image",
       description: "Look at the image below and describe what you see in detail. Talk about the people, objects, colors, and what might be happening.",
-      image: "https://images.unsplash.com/photo-1596456303458-d717d9d7d24b?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFtaWx5JTIwcGljbmljfGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+      image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+    },
+    {
+      id: 4,
+      title: "Describe a Park Scene",
+      description: "Look at this park scene and describe what you observe. Talk about the activities, weather, and atmosphere.",
+      image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+    },
+    {
+      id: 5,
+      title: "Describe a Kitchen Scene",
+      description: "Observe this kitchen image and describe what you see. Talk about the objects, their arrangement, and what activities might take place here.",
+      image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
     }
   ];
   
@@ -377,8 +389,18 @@ const SpeechAnalysis = () => {
                 {prompt.image && (
                   <img 
                     src={prompt.image} 
-                    alt={prompt.title} 
-                    style={{ width: '100%', borderRadius: '8px', marginTop: '10px' }} 
+                    alt={prompt.title}
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/400x300/4a6fa5/white?text=Sample+Image+for+Description";
+                    }}
+                    style={{ 
+                      width: '100%', 
+                      maxHeight: '300px',
+                      objectFit: 'cover',
+                      borderRadius: '8px', 
+                      marginTop: '15px',
+                      border: '2px solid #e1e5e9'
+                    }} 
                   />
                 )}
               </PromptCard>
