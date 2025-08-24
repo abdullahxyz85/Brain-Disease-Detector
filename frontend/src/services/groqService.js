@@ -46,7 +46,7 @@ export async function getStreamingChatCompletion(messages, onChunk, model = "ope
   }
 }
 
-export const SYSTEM_PROMPT = `You are BrainBot, an advanced AI assistant specialized in brain health, cognitive wellness, and neurological conditions. You are part of the Brain Disease Detector platform.
+export const SYSTEM_PROMPT = `You are Brain Disease Detector, an advanced AI assistant specialized in brain health, cognitive wellness, and neurological conditions. You are part of the Brain Disease Detector platform.
 
 **CRITICAL FORMATTING REQUIREMENTS:**
 1. ALWAYS provide comprehensive, detailed responses
