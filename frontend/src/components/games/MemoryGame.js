@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 
 const GameContainer = styled.div`
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px;
+  background-color: #1e1e2f;
+  color: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  max-height: 90vh;
 `;
 
 const GameHeader = styled.div`
@@ -16,13 +23,16 @@ const GameHeader = styled.div`
   h1 {
     font-size: 2.2rem;
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
   
   p {
-    color: #666;
+    color: #e0e0e0;
     max-width: 600px;
     margin: 0 auto;
+    font-size: 1.05rem;
+    line-height: 1.6;
   }
 `;
 
@@ -74,11 +84,11 @@ const GameControls = styled.div`
 `;
 
 const InfoPanel = styled.div`
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  padding: 20px;
+  padding: 25px;
   margin-top: 30px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   
   h2 {
     color: var(--primary-color);
@@ -87,8 +97,10 @@ const InfoPanel = styled.div`
   }
   
   p {
-    margin-bottom: 10px;
-    color: #666;
+    margin-bottom: 15px;
+    color: #e0e0e0;
+    font-size: 1.05rem;
+    line-height: 1.5;
   }
   
   .highlight {
@@ -98,8 +110,29 @@ const InfoPanel = styled.div`
 `;
 
 const Button = styled.button`
-  padding: ${({ large }) => (large ? '12px 30px' : '10px 20px')};
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  color: white;
+  padding: ${({ large }) => (large ? '15px 35px' : '12px 25px')};
+  border-radius: 50px;
   font-size: ${({ large }) => (large ? '1.1rem' : '1rem')};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  margin: 10px 5px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
 `;
 
 const LevelSelector = styled.div`
@@ -306,7 +339,7 @@ const MemoryGame = () => {
   // Send results to backend for processing
   const sendResults = async (stats) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/game/memory', {
+      await axios.post('http://localhost:8000/api/game/memory', {
         score,
         level,
         rounds: round,

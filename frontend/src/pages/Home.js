@@ -1,11 +1,11 @@
-import React, { useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import ParticlesBackground from '../components/ui/ParticlesBackground';
 import BrainAnimation from '../components/ui/BrainAnimation';
 import FloatingElements from '../components/ui/FloatingElements';
 import GradientBackground from '../components/ui/GradientBackground';
+import FullScreenChatbot from '../components/chat/FullScreenChatbot';
 import { AnimatedPrimaryButton, AnimatedSecondaryButton } from '../components/ui/AnimatedButtons';
 
 const HeroSection = styled.section`
@@ -51,21 +51,157 @@ const HeroTitle = styled(motion.h1)`
   text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   
   @media (max-width: 768px) {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 2rem;
   }
 `;
 
 const HeroSubtitle = styled(motion.p)`
   font-size: 1.3rem;
-  color: #444;
-  max-width: 750px;
-  margin: 0 auto 40px;
+  color: #555;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
   line-height: 1.6;
-  font-weight: 400;
+  font-weight: 300;
   
   @media (max-width: 768px) {
     font-size: 1.1rem;
+    margin-bottom: 30px;
   }
+`;
+
+const StatisticsSection = styled.section`
+  padding: 80px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+`;
+
+const StatisticsContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+`;
+
+const StatisticsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-top: 60px;
+`;
+
+const StatItem = styled(motion.div)`
+  text-align: center;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const StatNumber = styled.div`
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #fff;
+`;
+
+const StatLabel = styled.div`
+  font-size: 1.1rem;
+  opacity: 0.9;
+`;
+
+// This was a duplicate declaration of HeroSubtitle that was causing compile errors
+// Removed duplicate declaration
+
+const RoadmapSection = styled.section`
+  padding: 80px 0;
+  background: white;
+  color: #333;
+`;
+
+const RoadmapContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+`;
+
+const RoadmapGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 60px;
+`;
+
+const RoadmapCard = styled(motion.div)`
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px;
+  border: 2px solid #f0f0f0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-10px);
+    background: #f8f9fa;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: #e0e0e0;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
+  }
+`;
+
+const RoadmapIcon = styled.div`
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 25px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  
+  svg {
+    width: 40px;
+    height: 40px;
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
+  }
+`;
+
+const RoadmapTitle = styled.h3`
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: 700;
+`;
+
+const RoadmapDescription = styled.p`
+  opacity: 0.8;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #666;
 `;
 
 const ButtonGroup = styled(motion.div)`
@@ -79,9 +215,34 @@ const ButtonGroup = styled(motion.div)`
     align-items: center;
     gap: 18px;
     
-    a {
+    a, button {
       width: 80%;
     }
+  }
+`;
+
+const AIButton = styled(motion.button)`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 18px 40px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.6);
+  }
+
+  .ai-icon {
+    font-size: 1.3rem;
   }
 `;
 
@@ -131,7 +292,11 @@ const FeatureCard = styled(motion.div)`
   overflow: hidden;
   backdrop-filter: blur(5px);
   z-index: 1;
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
   &::before {
     content: '';
     position: absolute;
@@ -144,7 +309,7 @@ const FeatureCard = styled(motion.div)`
     z-index: -1;
     transition: opacity 0.5s ease;
   }
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -155,18 +320,50 @@ const FeatureCard = styled(motion.div)`
     background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
     transition: width 0.5s ease;
   }
-  
+
   &:hover {
     transform: translateY(-15px) scale(1.03);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-    
+
     &::after {
       width: 100%;
     }
-    
+
     svg {
       transform: scale(1.2) rotate(5deg);
     }
+  }
+
+  .feature-btn {
+    margin-top: 32px;
+    align-self: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .feature-btn .animated-primary-btn {
+    background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.18rem;
+    border-radius: 999px;
+    padding: 18px 0;
+    width: 90%;
+    max-width: 270px;
+    box-shadow: 0 8px 18px rgba(37,99,235,0.10);
+    margin: 0 auto;
+    text-align: center;
+    letter-spacing: 0.5px;
+    border: none;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    display: block;
+  }
+  .feature-btn .animated-primary-btn:hover {
+    background: linear-gradient(90deg, #1e40af 0%, #0ea5e9 100%);
+    box-shadow: 0 12px 24px rgba(37,99,235,0.16);
+    color: #fff;
+    transform: translateY(-2px) scale(1.03);
   }
 `;
 
@@ -369,93 +566,21 @@ const BenefitText = styled.div`
   }
 `;
 
-const CTASection = styled.section`
-  padding: 100px 0;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: white;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    z-index: 1;
-  }
-`;
-
-const CTATitle = styled(motion.h2)`
-  font-size: 2.5rem;
-  margin-bottom: 25px;
-  font-weight: 800;
-  position: relative;
-  z-index: 2;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-`;
-
-const CTASubtitle = styled(motion.p)`
-  font-size: 1.3rem;
-  margin-bottom: 45px;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.6;
-  position: relative;
-  z-index: 2;
-`;
-
-const CTAButton = styled(motion.div)`
-  position: relative;
-  z-index: 2;
-  display: inline-block;
-  
-  a {
-    background-color: white;
-    color: var(--primary-color);
-    padding: 16px 45px;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 1.15rem;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, var(--accent-color), transparent, var(--accent-color));
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
-      color: var(--primary-color);
-      text-decoration: none;
-      
-      &::before {
-        opacity: 0.2;
-      }
-    }
-  }
-`;
-
 const Home = () => {
+  const [showChatbot, setShowChatbot] = useState(false);
+
+  const openChatbot = () => {
+    setShowChatbot(true);
+  };
+
+  const closeChatbot = () => {
+    setShowChatbot(false);
+  };
+
   return (
     <>
+      {showChatbot && <FullScreenChatbot onClose={closeChatbot} />}
+      
       <HeroSection>
         <ParticlesBackground />
         <GradientBackground />
@@ -498,6 +623,14 @@ const Home = () => {
               stiffness: 70
             }}
           >
+            <AIButton
+              onClick={openChatbot}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="ai-icon">🧠</span>
+              Talk to AI Assistant
+            </AIButton>
             <AnimatedPrimaryButton to="/games">Try Cognitive Games</AnimatedPrimaryButton>
             <AnimatedSecondaryButton to="/resources">Learn More</AnimatedSecondaryButton>
           </ButtonGroup>
@@ -553,6 +686,9 @@ const Home = () => {
               >
                 Engage in interactive games designed to test memory, reaction time, problem-solving, and spatial skills. These fun activities help measure cognitive abilities.
               </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/games" className="animated-primary-btn">Explore Games</AnimatedPrimaryButton>
+              </div>
             </FeatureCard>
             
             <FeatureCard
@@ -601,6 +737,9 @@ const Home = () => {
               >
                 Answer questions that evaluate temporal orientation, semantic memory, reasoning, and logic. Our specialized quizzes provide insight into your cognitive functions.
               </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/quiz" className="animated-primary-btn">Take a Quiz</AnimatedPrimaryButton>
+              </div>
             </FeatureCard>
             
             <FeatureCard
@@ -649,6 +788,9 @@ const Home = () => {
               >
                 Record your voice describing an image or daily routine for AI-powered language pattern analysis. Changes in speech can be early indicators of cognitive changes.
               </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/speech" className="animated-primary-btn">Try Speech Analysis</AnimatedPrimaryButton>
+              </div>
             </FeatureCard>
             
             <FeatureCard
@@ -697,6 +839,61 @@ const Home = () => {
               >
                 Receive personalized recommendations based on your performance across different cognitive assessments. Get actionable insights to improve your brain health.
               </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/results" className="animated-primary-btn">View Results</AnimatedPrimaryButton>
+              </div>
+            </FeatureCard>
+            
+            <FeatureCard
+              whileHover={{ scale: 1.02 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ 
+                duration: 0.8,
+                type: "spring",
+                stiffness: 50,
+                delay: 2
+              }}
+            >
+              <FeatureIcon
+                whileHover={{ rotate: 5 }}
+                animate={{ 
+                  boxShadow: ["0 10px 20px rgba(37, 99, 235, 0.15)", "0 10px 20px rgba(56, 189, 248, 0.18)", "0 10px 20px rgba(37, 99, 235, 0.15)"]
+                }}
+                transition={{
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    delay: 2.5
+                  }
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <circle cx="12" cy="12" r="9" strokeWidth="2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 15c1.333-2 6.667-2 8 0M9 10h.01M15 10h.01" />
+                </svg>
+              </FeatureIcon>
+              <FeatureTitle
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 2.1 }}
+              >
+                MRI Disease Detector
+              </FeatureTitle>
+              <FeatureDescription
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 2.2 }}
+              >
+                Upload a brain MRI (RMN) scan and let our AI analyze it for signs of Alzheimer’s or dementia. Fast, private, and easy to use.
+              </FeatureDescription>
+              <div className="feature-btn">
+                <AnimatedPrimaryButton to="/mri-detector" className="animated-primary-btn">Analyze MRI</AnimatedPrimaryButton>
+              </div>
             </FeatureCard>
           </FeatureGrid>
         </FeaturesContainer>
@@ -830,51 +1027,158 @@ const Home = () => {
         </FeaturesContainer>
       </BenefitsSection>
       
-      <CTASection>
-        <FloatingElements />
-        <FeaturesContainer>
-          <CTATitle
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ 
-              duration: 0.7,
-              type: "spring",
-              stiffness: 50
-            }}
-          >
-            Ready to Assess Your Cognitive Health?
-          </CTATitle>
-          <CTASubtitle
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ 
-              duration: 0.7,
-              delay: 0.3,
-              type: "spring",
-              stiffness: 50
-            }}
-          >
-            Start with our interactive games and get personalized insights about your brain health. Early detection is key to maintaining cognitive wellness.
-          </CTASubtitle>
-          <CTAButton
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ 
-              duration: 0.7,
-              delay: 0.6,
-              type: "spring",
-              stiffness: 50
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Link to="/games">Get Started Now</Link>
-          </CTAButton>
-        </FeaturesContainer>
-      </CTASection>
+      <StatisticsSection>
+        <StatisticsContainer>
+          <SectionTitle style={{ color: 'white' }}>Brain Health by the Numbers</SectionTitle>
+          <StatisticsGrid>
+            <StatItem
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <StatNumber>55M+</StatNumber>
+              <StatLabel>People worldwide living with dementia</StatLabel>
+            </StatItem>
+            <StatItem
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <StatNumber>6.7M</StatNumber>
+              <StatLabel>Americans living with Alzheimer's</StatLabel>
+            </StatItem>
+            <StatItem
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <StatNumber>90%</StatNumber>
+              <StatLabel>Success rate with early intervention</StatLabel>
+            </StatItem>
+            <StatItem
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <StatNumber>12</StatNumber>
+              <StatLabel>Comprehensive cognitive assessments</StatLabel>
+            </StatItem>
+          </StatisticsGrid>
+        </StatisticsContainer>
+      </StatisticsSection>
+
+      <RoadmapSection>
+        <RoadmapContainer>
+          <SectionTitle style={{ color: '#333' }}>Future Roadmap</SectionTitle>
+          <RoadmapGrid>
+            <RoadmapCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <RoadmapIcon>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+              </RoadmapIcon>
+              <RoadmapTitle>Enhanced AI Diagnostics</RoadmapTitle>
+              <RoadmapDescription>
+                Advanced machine learning models for more accurate early detection of cognitive decline with improved pattern recognition and predictive analytics.
+              </RoadmapDescription>
+            </RoadmapCard>
+
+            <RoadmapCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <RoadmapIcon>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </RoadmapIcon>
+              <RoadmapTitle>Mobile Application</RoadmapTitle>
+              <RoadmapDescription>
+                Native mobile apps for iOS and Android with offline capabilities, push notifications for regular assessments, and seamless data synchronization.
+              </RoadmapDescription>
+            </RoadmapCard>
+
+            <RoadmapCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <RoadmapIcon>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </RoadmapIcon>
+              <RoadmapTitle>Healthcare Integration</RoadmapTitle>
+              <RoadmapDescription>
+                Direct integration with electronic health records (EHR) systems, allowing healthcare providers to access patient cognitive assessment data seamlessly.
+              </RoadmapDescription>
+            </RoadmapCard>
+
+            <RoadmapCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <RoadmapIcon>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </RoadmapIcon>
+              <RoadmapTitle>Real-time Monitoring</RoadmapTitle>
+              <RoadmapDescription>
+                Continuous cognitive monitoring using wearable devices and IoT sensors to track daily cognitive patterns and provide early warning systems.
+              </RoadmapDescription>
+            </RoadmapCard>
+
+            <RoadmapCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <RoadmapIcon>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                </svg>
+              </RoadmapIcon>
+              <RoadmapTitle>Global Research Network</RoadmapTitle>
+              <RoadmapDescription>
+                Establish partnerships with research institutions worldwide to create a comprehensive cognitive health database and accelerate breakthrough discoveries.
+              </RoadmapDescription>
+            </RoadmapCard>
+
+            <RoadmapCard
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <RoadmapIcon>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+              </RoadmapIcon>
+              <RoadmapTitle>Personalized Interventions</RoadmapTitle>
+              <RoadmapDescription>
+                AI-driven personalized cognitive training programs and lifestyle recommendations based on individual genetic profiles and cognitive patterns.
+              </RoadmapDescription>
+            </RoadmapCard>
+          </RoadmapGrid>
+        </RoadmapContainer>
+      </RoadmapSection>
     </>
   );
 };

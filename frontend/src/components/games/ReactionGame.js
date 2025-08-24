@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 
 const GameContainer = styled.div`
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 40px 30px;
   text-align: center;
+  background-color: #1e1e2f;
+  color: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  max-height: 90vh;
 `;
 
 const GameHeader = styled.div`
@@ -17,11 +24,15 @@ const GameHeader = styled.div`
     font-size: 2.5rem;
     color: var(--primary-color);
     margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
   
   p {
-    color: #666;
+    color: #e0e0e0;
     font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 650px;
+    margin: 0 auto;
   }
 `;
 
@@ -29,13 +40,15 @@ const GameArea = styled.div`
   position: relative;
   width: 100%;
   height: 400px;
-  background-color: #f5f5f5;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   margin: 30px 0;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const Target = styled(motion.div)`
@@ -79,14 +92,17 @@ const StartButton = styled.button`
 
 const ResultsContainer = styled.div`
   margin-top: 30px;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 30px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 80%;
+  max-width: 500px;
   
   h2 {
     color: var(--primary-color);
     margin-bottom: 20px;
+    font-size: 1.8rem;
   }
 `;
 
@@ -94,14 +110,19 @@ const ResultItem = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 15px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.1rem;
   
   &:last-child {
     border-bottom: none;
+    padding-top: 20px;
+    margin-top: 5px;
+    font-size: 1.2rem;
   }
   
   strong {
-    color: var(--primary-color);
+    color: var(--accent-color);
+    font-weight: 700;
   }
 `;
 

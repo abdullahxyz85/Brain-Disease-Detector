@@ -59,7 +59,7 @@ const ProgressBar = styled.div`
   
   .fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(90deg, #FF5722, #FF7043);
     width: ${({ progress }) => `${progress}%`};
     transition: width 0.5s ease;
   }
@@ -77,6 +77,16 @@ const Question = styled.h2`
   font-size: 1.5rem;
   color: var(--text-color);
   margin-bottom: 25px;
+`;
+
+const MemoryText = styled.div`
+  background: #f8f9fa;
+  border-left: 4px solid #FF5722;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  line-height: 1.6;
 `;
 
 const OptionsList = styled.div`
@@ -144,7 +154,7 @@ const ButtonContainer = styled.div`
 
 const Button = styled.button`
   padding: 12px 25px;
-  background-color: ${({ secondary }) => (secondary ? '#f1f3f5' : 'var(--primary-color)')};
+  background-color: ${({ secondary }) => (secondary ? '#f1f3f5' : '#FF5722')};
   color: ${({ secondary }) => (secondary ? 'var(--text-color)' : 'white')};
   border: none;
   border-radius: 50px;
@@ -157,8 +167,8 @@ const Button = styled.button`
     transform: ${({ disabled }) => (disabled ? 'none' : 'translateY(-3px)')};
     box-shadow: ${({ disabled }) => (disabled ? 'none' : '0 10px 20px rgba(0, 0, 0, 0.1)')};
     background-color: ${({ secondary, disabled }) => 
-      disabled ? (secondary ? '#f1f3f5' : 'var(--primary-color)') :
-      secondary ? '#e9ecef' : '#3a5a8c'
+      disabled ? (secondary ? '#f1f3f5' : '#FF5722') :
+      secondary ? '#e9ecef' : '#E64A19'
     };
   }
 `;
@@ -173,7 +183,7 @@ const ResultCard = styled(motion.div)`
 
 const ResultTitle = styled.h2`
   font-size: 1.8rem;
-  color: var(--primary-color);
+  color: #FF5722;
   margin-bottom: 20px;
 `;
 
@@ -186,12 +196,6 @@ const ScoreDisplay = styled.div`
     '#ff4d4f'
   };
   margin: 30px 0;
-`;
-
-const ResultSummary = styled.p`
-  color: #666;
-  font-size: 1.1rem;
-  margin-bottom: 20px;
 `;
 
 const AssessmentCard = styled.div`
@@ -218,7 +222,7 @@ const AssessmentCard = styled.div`
     margin-bottom: 10px;
     
     svg {
-      color: var(--primary-color);
+      color: #FF5722;
       min-width: 24px;
       margin-right: 10px;
       margin-top: 2px;
@@ -226,103 +230,119 @@ const AssessmentCard = styled.div`
   }
 `;
 
-// This is a template for any quiz type - we'd create specific ones for each cognitive area
-const TemporalQuiz = ({ onBack }) => {
+const MemoryRecallQuiz = ({ onBack }) => {
   const [questions] = useState([
     {
       id: 1,
-      text: "Which day of the week was yesterday?",
+      text: "Study this shopping list carefully for 30 seconds, then answer the question that follows:",
+      memoryText: "Shopping List:\n• Bananas\n• Whole wheat bread\n• Greek yogurt\n• Chicken breast\n• Spinach\n• Olive oil\n• Red bell peppers\n• Almonds",
+      question: "Which of these items was NOT on the shopping list?",
       options: [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday", 
-        "Sunday"
+        "Greek yogurt",
+        "Carrots",
+        "Spinach",
+        "Almonds"
       ],
-      correctAnswer: getCurrentDayIndex() === 0 ? 6 : getCurrentDayIndex() - 1
+      correctAnswer: 1,
+      type: "memory"
     },
     {
       id: 2,
-      text: "What is today's date?",
+      text: "Remember this sequence of events for the next question:",
+      memoryText: "Timeline:\n1. John woke up at 7:00 AM\n2. He had coffee and toast for breakfast\n3. He walked his dog in the park\n4. He drove to work at 8:30 AM\n5. He attended a meeting at 10:00 AM\n6. He had lunch with Sarah at 12:30 PM",
+      question: "What time did John drive to work?",
       options: [
-        `${new Date().getDate() - 2}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-        `${new Date().getDate() - 1}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-        `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-        `${new Date().getDate() + 1}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-        `${new Date().getDate() + 2}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`
+        "7:30 AM",
+        "8:00 AM",
+        "8:30 AM",
+        "9:00 AM"
       ],
-      correctAnswer: 2
+      correctAnswer: 2,
+      type: "memory"
     },
     {
       id: 3,
-      text: "Which season are we currently in?",
+      text: "Study these details about a person:",
+      memoryText: "Person Profile:\n• Name: Maria Rodriguez\n• Age: 34 years old\n• Occupation: Software Engineer\n• City: Portland, Oregon\n• Hobby: Rock climbing\n• Pet: Golden Retriever named Max\n• Favorite color: Turquoise",
+      question: "What is Maria's pet's name?",
       options: [
-        "Spring",
-        "Summer",
-        "Fall/Autumn",
-        "Winter"
+        "Buddy",
+        "Max",
+        "Charlie",
+        "Rocky"
       ],
-      correctAnswer: getCurrentSeason()
+      correctAnswer: 1,
+      type: "memory"
     },
     {
       id: 4,
-      text: "How many months have 31 days?",
+      text: "Memorize this phone conversation:",
+      memoryText: "Phone Call Summary:\nCaller: Dr. Smith's office\nPurpose: Appointment reminder\nDate: Thursday, March 15th\nTime: 2:30 PM\nLocation: Medical Center, Room 205\nNote: Please bring insurance card and ID",
+      question: "What room number is the appointment in?",
       options: [
-        "5",
-        "6",
-        "7",
-        "8"
+        "203",
+        "204",
+        "205",
+        "206"
       ],
-      correctAnswer: 2
+      correctAnswer: 2,
+      type: "memory"
     },
     {
       id: 5,
-      text: "If today is Wednesday, what day will it be in 9 days?",
+      text: "Study this recipe's ingredients:",
+      memoryText: "Chocolate Chip Cookies:\n• 2 cups all-purpose flour\n• 1 cup butter\n• 3/4 cup brown sugar\n• 1/2 cup white sugar\n• 2 eggs\n• 1 tsp vanilla extract\n• 1 tsp baking soda\n• 1 cup chocolate chips",
+      question: "How much brown sugar is needed?",
       options: [
-        "Thursday",
-        "Friday", 
-        "Saturday",
-        "Sunday",
-        "Monday"
+        "1/2 cup",
+        "2/3 cup",
+        "3/4 cup",
+        "1 cup"
       ],
-      correctAnswer: 4
+      correctAnswer: 2,
+      type: "memory"
     },
     {
       id: 6,
-      text: "What comes next in this sequence: January, March, May, July, ...?",
+      text: "Remember these travel details:",
+      memoryText: "Flight Information:\n• Flight Number: AA 1247\n• Departure: New York (JFK)\n• Arrival: Los Angeles (LAX)\n• Departure Time: 6:45 AM\n• Arrival Time: 10:15 AM (local time)\n• Gate: B23\n• Seat: 14A",
+      question: "What is the departure gate?",
       options: [
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
+        "B21",
+        "B22",
+        "B23",
+        "B24"
       ],
-      correctAnswer: 1
+      correctAnswer: 2,
+      type: "memory"
     },
     {
       id: 7,
-      text: "If it's 3:45 PM now, what time was it 5 hours and 30 minutes ago?",
+      text: "Study this family tree information:",
+      memoryText: "Family Tree:\n• Robert (grandfather) married to Helen\n• Their children: Michael, Susan, and David\n• Michael married to Jennifer, has son Tom\n• Susan married to Paul, has daughters Lisa and Emma\n• David is unmarried",
+      question: "Who are Susan's daughters?",
       options: [
-        "9:15 AM",
-        "10:15 AM", 
-        "8:15 AM",
-        "11:15 AM",
-        "10:15 PM"
+        "Lisa and Jennifer",
+        "Emma and Jennifer",
+        "Lisa and Emma", 
+        "Tom and Lisa"
       ],
-      correctAnswer: 1
+      correctAnswer: 2,
+      type: "memory"
     },
     {
       id: 8,
-      text: "How many days were in the previous month?",
+      text: "Memorize this daily schedule:",
+      memoryText: "Daily Schedule:\n• 6:00 AM - Wake up and exercise\n• 7:30 AM - Shower and breakfast\n• 9:00 AM - Team meeting\n• 11:00 AM - Project work\n• 1:00 PM - Lunch break\n• 2:30 PM - Client call\n• 4:00 PM - Email and admin tasks\n• 6:00 PM - Finish work",
+      question: "What time is the client call scheduled?",
       options: [
-        "28",
-        "29", 
-        "30",
-        "31"
+        "2:00 PM",
+        "2:30 PM",
+        "3:00 PM",
+        "3:30 PM"
       ],
-      correctAnswer: getDaysInPreviousMonth() === 28 ? 0 : getDaysInPreviousMonth() === 29 ? 1 : getDaysInPreviousMonth() === 30 ? 2 : 3
+      correctAnswer: 1,
+      type: "memory"
     },
   ]);
   
@@ -334,11 +354,31 @@ const TemporalQuiz = ({ onBack }) => {
   const [startTime, setStartTime] = useState(null);
   const [timeSpent, setTimeSpent] = useState(0);
   const [assessment, setAssessment] = useState(null);
+  const [showMemory, setShowMemory] = useState(true);
+  const [memoryTime, setMemoryTime] = useState(30);
   
   // Start timer when quiz begins
   useEffect(() => {
     setStartTime(Date.now());
   }, []);
+  
+  // Memory display timer
+  useEffect(() => {
+    if (showMemory && memoryTime > 0) {
+      const timer = setTimeout(() => {
+        setMemoryTime(memoryTime - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (memoryTime === 0) {
+      setShowMemory(false);
+    }
+  }, [showMemory, memoryTime]);
+  
+  // Reset memory display for new questions
+  useEffect(() => {
+    setShowMemory(true);
+    setMemoryTime(30);
+  }, [currentQuestionIndex]);
   
   // Get current question
   const currentQuestion = questions[currentQuestionIndex];
@@ -348,12 +388,14 @@ const TemporalQuiz = ({ onBack }) => {
   
   // Handle option selection
   const handleSelectOption = (index) => {
-    if (answered) return;
+    if (answered || showMemory) return;
     setSelectedOption(index);
   };
   
   // Check answer and move to next question
   const handleNextQuestion = () => {
+    if (showMemory) return;
+    
     // Can't proceed without selecting an option
     if (selectedOption === null) return;
     
@@ -380,6 +422,12 @@ const TemporalQuiz = ({ onBack }) => {
   
   // Skip current question
   const handleSkipQuestion = () => {
+    if (showMemory) {
+      setShowMemory(false);
+      setMemoryTime(0);
+      return;
+    }
+    
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedOption(null);
@@ -406,7 +454,7 @@ const TemporalQuiz = ({ onBack }) => {
     try {
       const response = await axios.post('http://localhost:8000/api/quiz/submit', {
         score: Math.round((score / questions.length) * 100),
-        category: 'temporal',
+        category: 'memory-recall',
         answeredQuestions: questions.length,
         correctAnswers: score,
         timeSpent: timeElapsed
@@ -420,10 +468,11 @@ const TemporalQuiz = ({ onBack }) => {
       const simulatedAssessment = {
         cognitive_score: Math.round((score / questions.length) * 85),
         accuracy: Math.round((score / questions.length) * 100),
-        assessment: "Your temporal orientation appears to be functioning normally.",
+        assessment: "Your memory recall abilities appear to be functioning well.",
         recommendations: [
-          "Continue practicing temporal orientation quizzes",
-          "Try activities that strengthen your awareness of time and sequences"
+          "Practice memory exercises regularly",
+          "Try reading and summarizing articles",
+          "Use memory palace techniques for better retention"
         ]
       };
       
@@ -443,10 +492,10 @@ const TemporalQuiz = ({ onBack }) => {
       {!quizCompleted ? (
         <>
           <QuizHeader>
-            <h1>Temporal Orientation Quiz</h1>
+            <h1>Memory Recall Quiz</h1>
             <p>
-              This quiz evaluates your awareness of time, date, and sequence of events.
-              Select the best answer for each question.
+              This quiz evaluates your ability to remember and recall detailed information.
+              Study each passage carefully and answer the questions that follow.
             </p>
           </QuizHeader>
           
@@ -463,20 +512,39 @@ const TemporalQuiz = ({ onBack }) => {
           >
             <Question>{currentQuestion.text}</Question>
             
-            <OptionsList>
-              {currentQuestion.options.map((option, index) => (
-                <OptionItem 
-                  key={index}
-                  selected={selectedOption === index}
-                  answered={answered}
-                  isCorrect={answered && index === currentQuestion.correctAnswer}
-                  isWrong={answered && index !== currentQuestion.correctAnswer}
-                  onClick={() => handleSelectOption(index)}
-                >
-                  {option}
-                </OptionItem>
-              ))}
-            </OptionsList>
+            {showMemory ? (
+              <div>
+                <MemoryText>
+                  {currentQuestion.memoryText.split('\n').map((line, index) => (
+                    <div key={index}>{line}</div>
+                  ))}
+                </MemoryText>
+                <div style={{ textAlign: 'center', margin: '20px 0', fontSize: '1.2rem', color: '#FF5722', fontWeight: 'bold' }}>
+                  Time remaining: {memoryTime} seconds
+                </div>
+              </div>
+            ) : (
+              <>
+                <Question style={{ fontSize: '1.2rem', marginTop: '20px' }}>
+                  {currentQuestion.question}
+                </Question>
+                
+                <OptionsList>
+                  {currentQuestion.options.map((option, index) => (
+                    <OptionItem 
+                      key={index}
+                      selected={selectedOption === index}
+                      answered={answered}
+                      isCorrect={answered && index === currentQuestion.correctAnswer}
+                      isWrong={answered && index !== currentQuestion.correctAnswer}
+                      onClick={() => handleSelectOption(index)}
+                    >
+                      {option}
+                    </OptionItem>
+                  ))}
+                </OptionsList>
+              </>
+            )}
             
             <ButtonContainer>
               <Button 
@@ -484,12 +552,13 @@ const TemporalQuiz = ({ onBack }) => {
                 onClick={handleSkipQuestion}
                 disabled={answered && currentQuestionIndex === questions.length - 1}
               >
-                {currentQuestionIndex === questions.length - 1 ? 'Skip & Finish' : 'Skip Question'}
+                {showMemory ? 'Skip Memory Phase' : 
+                 (currentQuestionIndex === questions.length - 1 ? 'Skip & Finish' : 'Skip Question')}
               </Button>
               
               <Button 
                 onClick={handleNextQuestion}
-                disabled={selectedOption === null && !answered}
+                disabled={showMemory || (selectedOption === null && !answered)}
               >
                 {answered ? 
                   (currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next Question') : 
@@ -505,10 +574,10 @@ const TemporalQuiz = ({ onBack }) => {
           transition={{ duration: 0.5 }}
         >
           <ResultTitle>Quiz Completed!</ResultTitle>
-          <ResultSummary>
+          <div style={{ color: '#666', marginBottom: '20px' }}>
             You answered {score} out of {questions.length} questions correctly.
             Time spent: {formatTime(timeSpent)}
-          </ResultSummary>
+          </div>
           
           <ScoreDisplay score={Math.round((score / questions.length) * 100)}>
             {Math.round((score / questions.length) * 100)}%
@@ -516,7 +585,7 @@ const TemporalQuiz = ({ onBack }) => {
           
           {assessment && (
             <AssessmentCard>
-              <h3>Cognitive Assessment</h3>
+              <h3>Memory Assessment</h3>
               <p>{assessment.assessment}</p>
               
               <h3>Recommendations</h3>
@@ -539,30 +608,10 @@ const TemporalQuiz = ({ onBack }) => {
   );
 };
 
-// Helper functions for dynamic date-based questions
-function getCurrentDayIndex() {
-  return new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-}
-
-function getCurrentSeason() {
-  const month = new Date().getMonth();
-  // Very simplified version - would need to be more sophisticated for real app
-  if (month >= 2 && month <= 4) return 0; // Spring
-  if (month >= 5 && month <= 7) return 1; // Summer
-  if (month >= 8 && month <= 10) return 2; // Fall
-  return 3; // Winter
-}
-
-function getDaysInPreviousMonth() {
-  const date = new Date();
-  // Set to last day of previous month
-  return new Date(date.getFullYear(), date.getMonth(), 0).getDate();
-}
-
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   return `${minutes}m ${remainingSeconds}s`;
 }
 
-export default TemporalQuiz;
+export default MemoryRecallQuiz;

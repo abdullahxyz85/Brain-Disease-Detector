@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
+import ScrollToTop from './components/layout/ScrollToTop';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import CognitiveGames from './pages/CognitiveGames';
@@ -12,11 +13,14 @@ import CognitiveQuiz from './pages/CognitiveQuiz';
 import SpeechAnalysis from './pages/SpeechAnalysis';
 import Resources from './pages/Resources';
 import ResultsDashboard from './components/results/ResultsDashboard';
+import MRIDetector from './pages/MRIDetector';
+import ChatbotPage from './pages/ChatbotPage';
+import ChatbotTest from './components/chat/ChatbotTest';
+import FloatingChatbot from './components/chat/FloatingChatbot';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import ForgotPassword from './components/auth/ForgotPassword';
 import PrivateRoute from './components/auth/PrivateRoute';
-import AuthStatusIndicator from './components/auth/AuthStatusIndicator';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
 import AlzheimerDetector from './pages/AlzheimerDetector';
@@ -25,6 +29,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <div className="app">
           <Navbar />
           <main className="main-content">
@@ -40,6 +45,8 @@ function App() {
               <Route path="/games/spatial" element={<SpatialSkillsGame />} />
               <Route path="/quiz" element={<CognitiveQuiz />} />
               <Route path="/speech" element={<SpeechAnalysis />} />
+              <Route path="/chatbot" element={<ChatbotPage />} />
+              <Route path="/chatbot-test" element={<ChatbotTest />} />
               <Route path="/resources" element={<Resources />} />
               <Route path="/results" element={
                 <PrivateRoute>
@@ -47,10 +54,11 @@ function App() {
                 </PrivateRoute>
               } />
               <Route path="/alzheimer-detector" element={<AlzheimerDetector />} />
+              <Route path="/mri-detector" element={<MRIDetector />} />
             </Routes>
           </main>
           <Footer />
-          <AuthStatusIndicator />
+          <FloatingChatbot />
         </div>
       </Router>
     </AuthProvider>

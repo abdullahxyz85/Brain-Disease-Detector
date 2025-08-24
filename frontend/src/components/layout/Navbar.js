@@ -133,26 +133,7 @@ const ActionButton = styled(Link)`
   }
 `;
 
-const LogoutButton = styled.button`
-  background: none;
-  border: 2px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: 8px 18px;
-  border-radius: 50px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background-color: var(--primary-color);
-    color: white;
-  }
-  
-  @media (max-width: 768px) {
-    margin-top: 10px;
-    width: 100%;
-  }
-`;
+// LogoutButton was removed as it's not used in the component
 
 const UserMenu = styled.div`
   position: relative;
@@ -286,6 +267,9 @@ const Navbar = () => {
           </NavLink>
           <NavLink to="/speech" className={isActive('/speech')} onClick={closeMenu}>
             Speech Analysis
+          </NavLink>
+          <NavLink to="/chatbot" className={isActive('/chatbot')} onClick={closeMenu}>
+            AI Assistant
           </NavLink>
           <NavLink to="/resources" className={isActive('/resources')} onClick={closeMenu}>
             Resources

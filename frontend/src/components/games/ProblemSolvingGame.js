@@ -5,8 +5,15 @@ import axios from 'axios';
 
 const GameContainer = styled.div`
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 40px 30px;
+  background-color: #1e1e2f;
+  color: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  max-height: 90vh;
 `;
 
 const GameHeader = styled.div`
@@ -17,20 +24,25 @@ const GameHeader = styled.div`
     font-size: 2.5rem;
     color: var(--primary-color);
     margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
   
   p {
-    color: #666;
+    color: #e0e0e0;
     font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 650px;
+    margin: 0 auto;
   }
 `;
 
 const GameArea = styled.div`
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 35px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const PuzzleContainer = styled.div`
@@ -38,21 +50,23 @@ const PuzzleContainer = styled.div`
 `;
 
 const Puzzle = styled.div`
-  background-color: #f8f9fa;
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  padding: 25px;
+  padding: 30px;
   margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   
   h3 {
     font-size: 1.3rem;
     color: var(--primary-color);
     margin-bottom: 15px;
+    font-weight: 600;
   }
   
   p {
-    color: #333;
-    font-size: 1.1rem;
-    margin-bottom: 20px;
+    color: #e0e0e0;
+    font-size: 1.15rem;
+    margin-bottom: 25px;
     line-height: 1.6;
   }
 `;
@@ -69,24 +83,24 @@ const OptionsContainer = styled.div`
 `;
 
 const OptionButton = styled.button`
-  background-color: ${props => props.selected ? 'var(--primary-color)' : 'white'};
-  color: ${props => props.selected ? 'white' : '#333'};
-  padding: 15px;
+  background-color: ${props => props.selected ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'};
+  color: ${props => props.selected ? 'white' : '#e0e0e0'};
+  padding: 16px;
   border-radius: 10px;
-  border: 1px solid #ddd;
-  font-size: 1rem;
+  border: 1px solid ${props => props.selected ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.2)'};
+  font-size: 1.05rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   
   &:hover {
-    background-color: ${props => props.selected ? 'var(--primary-color)' : '#f5f5f5'};
+    background-color: ${props => props.selected ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.15)'};
     transform: translateY(-3px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
   }
   
   &:disabled {
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.6;
   }
 `;
 
