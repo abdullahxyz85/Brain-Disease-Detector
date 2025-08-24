@@ -19,6 +19,7 @@ import PrivateRoute from './components/auth/PrivateRoute';
 import AuthStatusIndicator from './components/auth/AuthStatusIndicator';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
+import MentalMathGame from './components/games/MentalMath';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
               <Route path="/games/reaction" element={<ReactionGame />} />
               <Route path="/games/problem-solving" element={<ProblemSolvingGame />} />
               <Route path="/games/spatial" element={<SpatialSkillsGame />} />
+              <Route path="/games/mental-math" element={<MentalMathGame />} />
               <Route path="/quiz" element={<CognitiveQuiz />} />
               <Route path="/speech" element={<SpeechAnalysis />} />
               <Route path="/resources" element={<Resources />} />

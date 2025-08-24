@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "../../ui/button";
 
 export default function MentalMathGame() {
   const [question, setQuestion] = useState(generateQuestion());
@@ -56,13 +55,13 @@ export default function MentalMathGame() {
         placeholder="Answer"
       />
 
-      <Button
+      <button
         onClick={checkAnswer}
         className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-2xl shadow-md"
         disabled={showNext}
       >
         Check Answer
-      </Button>
+      </button>
 
       {feedback && (
         <motion.div
@@ -79,14 +78,15 @@ export default function MentalMathGame() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Button
+          <button
             onClick={nextQuestion}
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-2xl shadow-md"
           >
             Next Question
-          </Button>
+          </button>
         </motion.div>
       )}
     </div>
   );
 }
+
