@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import ScrollToTop from './components/layout/ScrollToTop';
 import Footer from './components/layout/Footer';
@@ -23,6 +23,7 @@ import ForgotPassword from './components/auth/ForgotPassword';
 import PrivateRoute from './components/auth/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
+import AlzheimerDetector from './pages/AlzheimerDetector';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
                   <ResultsDashboard />
                 </PrivateRoute>
               } />
+              <Route path="/alzheimer-detector" element={<AlzheimerDetector />} />
               <Route path="/mri-detector" element={<MRIDetector />} />
             </Routes>
           </main>
