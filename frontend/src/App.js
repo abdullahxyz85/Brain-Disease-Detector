@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
@@ -19,7 +19,7 @@ import PrivateRoute from './components/auth/PrivateRoute';
 import AuthStatusIndicator from './components/auth/AuthStatusIndicator';
 import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
-import MentalMathGame from './components/games/MentalMath';
+import AlzheimerDetector from './pages/AlzheimerDetector';
 
 function App() {
   return (
@@ -38,7 +38,6 @@ function App() {
               <Route path="/games/reaction" element={<ReactionGame />} />
               <Route path="/games/problem-solving" element={<ProblemSolvingGame />} />
               <Route path="/games/spatial" element={<SpatialSkillsGame />} />
-              <Route path="/games/mental-math" element={<MentalMathGame />} />
               <Route path="/quiz" element={<CognitiveQuiz />} />
               <Route path="/speech" element={<SpeechAnalysis />} />
               <Route path="/resources" element={<Resources />} />
@@ -47,6 +46,7 @@ function App() {
                   <ResultsDashboard />
                 </PrivateRoute>
               } />
+              <Route path="/alzheimer-detector" element={<AlzheimerDetector />} />
             </Routes>
           </main>
           <Footer />

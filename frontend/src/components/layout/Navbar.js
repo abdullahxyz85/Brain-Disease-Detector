@@ -290,6 +290,9 @@ const Navbar = () => {
           <NavLink to="/resources" className={isActive('/resources')} onClick={closeMenu}>
             Resources
           </NavLink>
+          <NavLink to="/alzheimer-detector" className="nav-link bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-2xl" style={{ marginLeft: "8px" }} onClick={closeMenu}>
+            Alzheimer Detector
+          </NavLink>
           
           {isAuthenticated ? (
             <>
