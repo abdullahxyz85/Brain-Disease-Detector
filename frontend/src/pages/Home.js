@@ -1,11 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import ParticlesBackground from '../components/ui/ParticlesBackground';
 import BrainAnimation from '../components/ui/BrainAnimation';
 import FloatingElements from '../components/ui/FloatingElements';
 import GradientBackground from '../components/ui/GradientBackground';
+import FullScreenChatbot from '../components/chat/FullScreenChatbot';
 import { AnimatedPrimaryButton, AnimatedSecondaryButton } from '../components/ui/AnimatedButtons';
 
 const HeroSection = styled.section`
@@ -79,9 +79,34 @@ const ButtonGroup = styled(motion.div)`
     align-items: center;
     gap: 18px;
     
-    a {
+    a, button {
       width: 80%;
     }
+  }
+`;
+
+const AIButton = styled(motion.button)`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 18px 40px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.6);
+  }
+
+  .ai-icon {
+    font-size: 1.3rem;
   }
 `;
 
@@ -445,53 +470,21 @@ const CTASubtitle = styled(motion.p)`
   z-index: 2;
 `;
 
-const CTAButton = styled(motion.div)`
-  position: relative;
-  z-index: 2;
-  display: inline-block;
-  
-  a {
-    background-color: white;
-    color: var(--primary-color);
-    padding: 16px 45px;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 1.15rem;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, var(--accent-color), transparent, var(--accent-color));
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
-      color: var(--primary-color);
-      text-decoration: none;
-      
-      &::before {
-        opacity: 0.2;
-      }
-    }
-  }
-`;
-
 const Home = () => {
+  const [showChatbot, setShowChatbot] = useState(false);
+
+  const openChatbot = () => {
+    setShowChatbot(true);
+  };
+
+  const closeChatbot = () => {
+    setShowChatbot(false);
+  };
+
   return (
     <>
+      {showChatbot && <FullScreenChatbot onClose={closeChatbot} />}
+      
       <HeroSection>
         <ParticlesBackground />
         <GradientBackground />
@@ -534,6 +527,14 @@ const Home = () => {
               stiffness: 70
             }}
           >
+            <AIButton
+              onClick={openChatbot}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="ai-icon">🧠</span>
+              Talk to AI Assistant
+            </AIButton>
             <AnimatedPrimaryButton to="/games">Try Cognitive Games</AnimatedPrimaryButton>
             <AnimatedSecondaryButton to="/resources">Learn More</AnimatedSecondaryButton>
           </ButtonGroup>

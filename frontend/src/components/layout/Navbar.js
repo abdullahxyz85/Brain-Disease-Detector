@@ -268,6 +268,9 @@ const Navbar = () => {
           <NavLink to="/speech" className={isActive('/speech')} onClick={closeMenu}>
             Speech Analysis
           </NavLink>
+          <NavLink to="/chatbot" className={isActive('/chatbot')} onClick={closeMenu}>
+            AI Assistant
+          </NavLink>
           <NavLink to="/resources" className={isActive('/resources')} onClick={closeMenu}>
             Resources
           </NavLink>

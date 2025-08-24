@@ -14,6 +14,9 @@ import SpeechAnalysis from './pages/SpeechAnalysis';
 import Resources from './pages/Resources';
 import ResultsDashboard from './components/results/ResultsDashboard';
 import MRIDetector from './pages/MRIDetector';
+import ChatbotPage from './pages/ChatbotPage';
+import ChatbotTest from './components/chat/ChatbotTest';
+import FloatingChatbot from './components/chat/FloatingChatbot';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import ForgotPassword from './components/auth/ForgotPassword';
@@ -42,6 +45,8 @@ function App() {
               <Route path="/games/spatial" element={<SpatialSkillsGame />} />
               <Route path="/quiz" element={<CognitiveQuiz />} />
               <Route path="/speech" element={<SpeechAnalysis />} />
+              <Route path="/chatbot" element={<ChatbotPage />} />
+              <Route path="/chatbot-test" element={<ChatbotTest />} />
               <Route path="/resources" element={<Resources />} />
               <Route path="/results" element={
                 <PrivateRoute>
@@ -53,6 +58,7 @@ function App() {
           </main>
           <Footer />
           <AuthStatusIndicator />
+          <FloatingChatbot />
         </div>
       </Router>
     </AuthProvider>

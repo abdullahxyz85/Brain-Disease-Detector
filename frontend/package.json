@@ -9,6 +9,7 @@
     "@tsparticles/react": "^3.0.0",
     "axios": "^1.5.0",
     "framer-motion": "^10.16.4",
+    "groq-sdk": "^0.30.0",
     "react": "^18.2.0",
     "react-audio-voice-recorder": "^2.1.2",
     "react-dom": "^18.2.0",
