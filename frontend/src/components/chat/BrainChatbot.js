@@ -1,273 +1,260 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import styled from 'styled-components';
-import { getGroqChatCompletion, getStreamingChatCompletion, SYSTEM_PROMPT, AVAILABLE_MODELS } from '../../services/groqService';
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+import {
+  getGroqChatCompletion,
+  getStreamingChatCompletion,
+  SYSTEM_PROMPT,
+  AVAILABLE_MODELS,
+} from "../../services/groqService";
 
-// Enhanced text formatting function to handle dense AI responses
-const formatMessageText = (text) => {
-  if (!text) return '';
-  
-  let formatted = text
-    // Normalize line breaks
-    .replace(/\r\n/g, '\n')
-    .replace(/\r/g, '\n')
-    
-    // Enhanced header detection - ensure proper spacing 
-    .replace(/(\*\*[^*]+\*\*)/g, '\n$1\n')  // **Header** with single line breaks
-    .replace(/(#{1,6}\s[^\n]+)/g, '\n$1\n')  // # Header with single line breaks
-    
-    // Force line breaks before bullet points and numbered lists
-    .replace(/([^.\n])\s*([•·*-]\s)/g, '$1\n$2')
-    .replace(/([^.\n])\s*(\d+\.\s)/g, '$1\n$2')
-    
-    // Ensure each bullet/number starts on new line (fix run-together lists)
-    .replace(/([•·*-]\s[^•·*\n-]+?)([•·*-]\s)/g, '$1\n$2')
-    .replace(/(\d+\.\s[^0-9\n]+?)(\d+\.\s)/g, '$1\n$2')
-    
-    // Clean up multiple spaces and normalize
-    .replace(/[ \t]+/g, ' ')
-    .replace(/\n\n\n+/g, '\n\n')
-    .replace(/^\n+/, '')
-    .replace(/\n+$/, '');
-
-  return formatted;
-};
-
-// Advanced message component with better parsing
+// Advanced message component that automatically formats AI responses
 const FormattedMessage = ({ text, isUser }) => {
   if (isUser) {
-    return <span style={{ whiteSpace: 'pre-wrap' }}>{text}</span>;
+    return <span style={{ whiteSpace: "pre-wrap" }}>{text}</span>;
   }
 
-  // Process AI messages line by line for better bullet/number separation
-  const formattedText = formatMessageText(text);
-  const lines = formattedText.split('\n').map(line => line.trim()).filter(line => line);
-  
-  const elements = [];
-  let currentSection = [];
-  
-  lines.forEach((line, index) => {
-    // Enhanced header detection - multiple patterns
-    const isHeader = (
-      line.match(/^\*\*[^*]+\*\*$/) ||                 // **Header** (exact match)
-      line.match(/^\*\*[^*]+\*\*/) ||                  // **Header** (partial match)
-      line.match(/^#{1,6}\s+\S/) ||                    // # Header (with space and content)
-      line.match(/^[A-Z][A-Z\s]{3,}:?\s*$/) ||        // ALL CAPS HEADER (at least 4 chars)
-      (line.match(/^[A-Z][A-Za-z\s]+:?\s*$/) && line.length > 3 && line.length < 50) || // Title Case (reasonable length)
-      line.match(/^\*\*[^*]+\*\*\s*$/)                 // **Header** with optional trailing spaces
-    );
-    
-    if (isHeader) {
-      // Flush current section
-      if (currentSection.length > 0) {
-        elements.push({ type: 'section', content: currentSection.join(' '), key: elements.length });
-        currentSection = [];
-      }
-      
-      // Clean and add header - more robust cleaning
-      let headerText = line
-        .replace(/^\*\*/, '')            // Remove leading **
-        .replace(/\*\*$/, '')            // Remove trailing **
-        .replace(/^#{1,6}\s*/g, '')      // Remove # markers
-        .replace(/:$/, '')               // Remove trailing colon
-        .trim();
-        
-      // Skip empty headers
-      if (headerText.length > 0) {
-        elements.push({ 
-          type: 'header', 
-          content: headerText, 
-          key: elements.length 
-        });
-      }
-    }
-    // Check if it's a bullet point
-    else if (line.match(/^[•·*-]\s/)) {
-      // Flush current section first
-      if (currentSection.length > 0) {
-        elements.push({ type: 'section', content: currentSection.join(' '), key: elements.length });
-        currentSection = [];
-      }
-      
-      const bulletText = line.replace(/^[•·*-]\s/, '');
-      elements.push({ 
-        type: 'bullet', 
-        content: bulletText, 
-        key: elements.length 
-      });
-    }
-    // Check if it's a numbered list
-    else if (line.match(/^\d+\.\s/)) {
-      // Flush current section first
-      if (currentSection.length > 0) {
-        elements.push({ type: 'section', content: currentSection.join(' '), key: elements.length });
-        currentSection = [];
-      }
-      
-      const match = line.match(/^(\d+\.)\s(.*)$/);
-      if (match) {
-        elements.push({ 
-          type: 'numbered', 
-          number: match[1],
-          content: match[2], 
-          key: elements.length 
-        });
-      }
-    }
-    // Regular text - add to current section
-    else {
-      // Check if this line contains ** markdown but wasn't detected as header
-      if (line.includes('**')) {
-        // Try to extract content between ** - improved regex to handle multiple ** patterns
-        const headerMatches = line.match(/\*\*([^*]+)\*\*/g);
-        if (headerMatches) {
-          // Flush current section first
-          if (currentSection.length > 0) {
-            elements.push({ type: 'section', content: currentSection.join(' '), key: elements.length });
-            currentSection = [];
-          }
-          
-          // Process each header match
-          headerMatches.forEach((match, matchIndex) => {
-            const headerContent = match.replace(/\*\*/g, '').trim();
-            if (headerContent.length > 0) {
-              elements.push({ 
-                type: 'header', 
-                content: headerContent, 
-                key: elements.length + matchIndex 
-              });
-            }
-          });
-          
-          // Process rest of line if any
-          const restOfLine = line.replace(/\*\*[^*]+\*\*/g, '').trim();
-          if (restOfLine.length > 0) {
-            currentSection.push(restOfLine);
-          }
-          return; // Skip adding to current section
+  // Process AI messages to automatically format them
+  const formatAIResponse = (text) => {
+    if (!text) return [];
+
+    const lines = text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line);
+    const elements = [];
+
+    lines.forEach((line, index) => {
+      // Detect different types of content automatically
+
+      // Check if it's a heading (starts with ** or # or is ALL CAPS)
+      if (
+        line.match(/^\*\*[^*]+\*\*$/) ||
+        line.match(/^#{1,6}\s/) ||
+        line.match(/^[A-Z][A-Z\s]{3,}:?\s*$/) ||
+        (line.match(/^[A-Z][A-Za-z\s]+:?\s*$/) &&
+          line.length > 3 &&
+          line.length < 50)
+      ) {
+        // Clean heading text
+        let headingText = line
+          .replace(/^\*\*/, "")
+          .replace(/\*\*$/, "")
+          .replace(/^#{1,6}\s*/, "")
+          .replace(/:$/, "")
+          .trim();
+
+        if (headingText.length > 0) {
+          elements.push({ type: "heading", content: headingText, key: index });
         }
       }
-      
-      // Regular text content
-      currentSection.push(line);
-    }
-  });
-  
-  // Flush any remaining section
-  if (currentSection.length > 0) {
-    elements.push({ type: 'section', content: currentSection.join(' '), key: elements.length });
-  }
-  
+      // Check if it's a bullet point
+      else if (line.match(/^[•·*-]\s/)) {
+        const bulletText = line.replace(/^[•·*-]\s/, "");
+        elements.push({ type: "bullet", content: bulletText, key: index });
+      }
+      // Check if it's a numbered list
+      else if (line.match(/^\d+\.\s/)) {
+        const match = line.match(/^(\d+\.)\s(.*)$/);
+        if (match) {
+          elements.push({
+            type: "numbered",
+            number: match[1],
+            content: match[2],
+            key: index,
+          });
+        }
+      }
+      // Check if it's a subheading (contains ** but not at start)
+      else if (line.includes("**") && !line.match(/^\*\*[^*]+\*\*$/)) {
+        // Extract text between ** and treat as subheading
+        const subheadingMatch = line.match(/\*\*([^*]+)\*\*/);
+        if (subheadingMatch) {
+          const subheadingText = subheadingMatch[1].trim();
+          if (subheadingText.length > 0) {
+            elements.push({
+              type: "subheading",
+              content: subheadingText,
+              key: index,
+            });
+          }
+
+          // Add remaining text as regular text
+          const remainingText = line.replace(/\*\*[^*]+\*\*/, "").trim();
+          if (remainingText.length > 0) {
+            elements.push({
+              type: "text",
+              content: remainingText,
+              key: index + 0.1,
+            });
+          }
+        } else {
+          elements.push({ type: "text", content: line, key: index });
+        }
+      }
+      // Regular text
+      else {
+        elements.push({ type: "text", content: line, key: index });
+      }
+    });
+
+    return elements;
+  };
+
+  const elements = formatAIResponse(text);
+
   return (
     <div>
       {elements.map((element) => {
         switch (element.type) {
-          case 'header':
+          case "heading":
             return (
-              <div key={element.key} style={{ 
-                fontWeight: '700', 
-                color: '#333', 
-                fontSize: '18px',
-                marginBottom: '16px',
-                marginTop: '24px',
-                borderLeft: '4px solid #4facfe',
-                paddingLeft: '16px',
-                background: 'linear-gradient(90deg, rgba(79, 172, 254, 0.15) 0%, rgba(79, 172, 254, 0.06) 70%, transparent 100%)',
-                borderRadius: '0 8px 8px 0',
-                padding: '14px 18px',
-                letterSpacing: '0.5px',
-                lineHeight: '1.3',
-                textTransform: 'none',
-                position: 'relative',
-                boxShadow: '0 3px 15px rgba(79, 172, 254, 0.2)',
-                border: '1px solid rgba(79, 172, 254, 0.25)',
-                display: 'flex',
-                alignItems: 'center',
-                backdropFilter: 'blur(10px)'
-              }}>
-                <span style={{
-                  marginRight: '10px',
-                  color: '#4facfe',
-                  fontSize: '18px',
-                  fontWeight: 'bold'
-                }}>
+              <div
+                key={element.key}
+                style={{
+                  fontWeight: "700",
+                  color: "#333",
+                  fontSize: "20px",
+                  marginBottom: "16px",
+                  marginTop: "24px",
+                  borderLeft: "4px solid #4facfe",
+                  paddingLeft: "16px",
+                  background:
+                    "linear-gradient(90deg, rgba(79, 172, 254, 0.15) 0%, rgba(79, 172, 254, 0.06) 70%, transparent 100%)",
+                  borderRadius: "0 8px 8px 0",
+                  padding: "14px 18px",
+                  letterSpacing: "0.5px",
+                  lineHeight: "1.3",
+                  textTransform: "none",
+                  position: "relative",
+                  boxShadow: "0 3px 15px rgba(79, 172, 254, 0.2)",
+                  border: "1px solid rgba(79, 172, 254, 0.25)",
+                  display: "flex",
+                  alignItems: "center",
+                  backdropFilter: "blur(10px)",
+                }}
+              >
+                <span
+                  style={{
+                    marginRight: "10px",
+                    color: "#4facfe",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                  }}
+                >
                   ▶
                 </span>
                 {element.content}
               </div>
             );
-            
-          case 'bullet':
+
+          case "subheading":
             return (
-              <div key={element.key} style={{ 
-                marginBottom: '10px',
-                display: 'flex',
-                alignItems: 'flex-start',
-                lineHeight: '1.6',
-                paddingLeft: '8px'
-              }}>
-                <span style={{ 
-                  color: '#4facfe', 
-                  marginRight: '12px', 
-                  fontWeight: 'bold',
-                  minWidth: '16px',
-                  marginTop: '2px',
-                  fontSize: '14px'
-                }}>
-                  •
-                </span>
-                <span style={{ 
-                  flex: 1,
-                  color: '#333',
-                  fontSize: '15px'
-                }}>
-                  {element.content}
-                </span>
-              </div>
-            );
-            
-          case 'numbered':
-            return (
-              <div key={element.key} style={{ 
-                marginBottom: '10px',
-                display: 'flex',
-                alignItems: 'flex-start',
-                lineHeight: '1.6',
-                paddingLeft: '8px'
-              }}>
-                <span style={{ 
-                  color: '#4facfe', 
-                  marginRight: '12px', 
-                  fontWeight: 'bold',
-                  minWidth: '24px',
-                  marginTop: '2px',
-                  fontSize: '15px'
-                }}>
-                  {element.number}
-                </span>
-                <span style={{ 
-                  flex: 1,
-                  color: '#333',
-                  fontSize: '15px'
-                }}>
-                  {element.content}
-                </span>
-              </div>
-            );
-            
-          case 'section':
-            return (
-              <div key={element.key} style={{ 
-                marginBottom: '16px',
-                lineHeight: '1.7',
-                color: '#333',
-                fontSize: '15px',
-                paddingLeft: '4px'
-              }}>
+              <div
+                key={element.key}
+                style={{
+                  fontWeight: "600",
+                  color: "#4facfe",
+                  fontSize: "16px",
+                  marginBottom: "12px",
+                  marginTop: "20px",
+                  paddingLeft: "8px",
+                  borderBottom: "2px solid rgba(79, 172, 254, 0.3)",
+                  paddingBottom: "8px",
+                }}
+              >
                 {element.content}
               </div>
             );
-            
+
+          case "bullet":
+            return (
+              <div
+                key={element.key}
+                style={{
+                  marginBottom: "10px",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  lineHeight: "1.6",
+                  paddingLeft: "8px",
+                }}
+              >
+                <span
+                  style={{
+                    color: "#4facfe",
+                    marginRight: "12px",
+                    fontWeight: "bold",
+                    minWidth: "16px",
+                    marginTop: "2px",
+                    fontSize: "14px",
+                  }}
+                >
+                  •
+                </span>
+                <span
+                  style={{
+                    flex: 1,
+                    color: "#333",
+                    fontSize: "15px",
+                  }}
+                >
+                  {element.content}
+                </span>
+              </div>
+            );
+
+          case "numbered":
+            return (
+              <div
+                key={element.key}
+                style={{
+                  marginBottom: "10px",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  lineHeight: "1.6",
+                  paddingLeft: "8px",
+                }}
+              >
+                <span
+                  style={{
+                    color: "#4facfe",
+                    marginRight: "12px",
+                    fontWeight: "bold",
+                    minWidth: "24px",
+                    marginTop: "2px",
+                    fontSize: "15px",
+                  }}
+                >
+                  {element.number}
+                </span>
+                <span
+                  style={{
+                    flex: 1,
+                    color: "#333",
+                    fontSize: "15px",
+                  }}
+                >
+                  {element.content}
+                </span>
+              </div>
+            );
+
+          case "text":
+            return (
+              <div
+                key={element.key}
+                style={{
+                  marginBottom: "16px",
+                  lineHeight: "1.7",
+                  color: "#333",
+                  fontSize: "15px",
+                  paddingLeft: "4px",
+                }}
+              >
+                {element.content}
+              </div>
+            );
+
           default:
             return null;
         }
@@ -310,9 +297,15 @@ const BotAvatar = styled.div`
   animation: pulse 2s infinite;
 
   @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 `;
 
@@ -377,7 +370,7 @@ const Message = styled(motion.div)`
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  ${props => props.isUser ? 'flex-direction: row-reverse;' : ''}
+  ${(props) => (props.isUser ? "flex-direction: row-reverse;" : "")}
 `;
 
 const MessageBubble = styled.div`
@@ -389,11 +382,14 @@ const MessageBubble = styled.div`
   white-space: pre-wrap;
   word-wrap: break-word;
 
-  ${props => props.isUser ? `
+  ${(props) =>
+    props.isUser
+      ? `
     background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     color: white;
     border-bottom-right-radius: 5px;
-  ` : `
+  `
+      : `
     background: rgba(255, 255, 255, 0.95);
     color: #333;
     border-bottom-left-radius: 5px;
@@ -411,9 +407,12 @@ const MessageAvatar = styled.div`
   font-size: 16px;
   flex-shrink: 0;
 
-  ${props => props.isUser ? `
+  ${(props) =>
+    props.isUser
+      ? `
     background: linear-gradient(135deg, #ff9a56 0%, #ffad56 100%);
-  ` : `
+  `
+      : `
     background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   `}
 `;
@@ -464,7 +463,7 @@ const SendButton = styled(motion.button)`
   cursor: pointer;
   color: white;
   font-size: 18px;
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -489,13 +488,25 @@ const TypingDots = styled.div`
     background: rgba(255, 255, 255, 0.7);
     animation: typing 1.4s infinite ease-in-out;
 
-    &:nth-child(1) { animation-delay: -0.32s; }
-    &:nth-child(2) { animation-delay: -0.16s; }
+    &:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    &:nth-child(2) {
+      animation-delay: -0.16s;
+    }
   }
 
   @keyframes typing {
-    0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
-    40% { transform: scale(1); opacity: 1; }
+    0%,
+    80%,
+    100% {
+      transform: scale(0.8);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 `;
 
@@ -538,7 +549,7 @@ const SUGGESTED_QUESTIONS = [
   "Best brain exercises for seniors?",
   "How does stress affect brain health?",
   "What foods are good for brain health?",
-  "How to interpret my cognitive test results?"
+  "How to interpret my cognitive test results?",
 ];
 
 const BrainChatbot = () => {
@@ -547,19 +558,19 @@ const BrainChatbot = () => {
       id: 1,
       text: "Hello! I'm BrainBot, your AI assistant for brain health and cognitive wellness. I'm here to help you understand brain health, navigate our platform, and provide support on your cognitive wellness journey. How can I assist you today?",
       isUser: false,
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    },
   ]);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [selectedModel, setSelectedModel] = useState('llama3-8b-8192');
-  const [streamingMessage, setStreamingMessage] = useState('');
+  const [error, setError] = useState("");
+  const [selectedModel, setSelectedModel] = useState("llama3-8b-8192");
+  const [streamingMessage, setStreamingMessage] = useState("");
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -573,26 +584,26 @@ const BrainChatbot = () => {
       id: Date.now(),
       text: messageText.trim(),
       isUser: true,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputText("");
     setIsLoading(true);
-    setError('');
-    setStreamingMessage('');
+    setError("");
+    setStreamingMessage("");
 
     try {
       const conversationHistory = [
         { role: "system", content: SYSTEM_PROMPT },
-        ...messages.map(msg => ({
+        ...messages.map((msg) => ({
           role: msg.isUser ? "user" : "assistant",
-          content: msg.text
+          content: msg.text,
         })),
-        { role: "user", content: messageText.trim() }
+        { role: "user", content: messageText.trim() },
       ];
 
-      let fullResponse = '';
+      let fullResponse = "";
       await getStreamingChatCompletion(
         conversationHistory,
         (chunk) => {
@@ -606,21 +617,23 @@ const BrainChatbot = () => {
         id: Date.now() + 1,
         text: fullResponse,
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, botMessage]);
-      setStreamingMessage('');
+      setMessages((prev) => [...prev, botMessage]);
+      setStreamingMessage("");
     } catch (error) {
-      console.error('Error sending message:', error);
-      setError('Sorry, I encountered an error. Please check your API key and try again.');
+      console.error("Error sending message:", error);
+      setError(
+        "Sorry, I encountered an error. Please check your API key and try again."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -643,7 +656,7 @@ const BrainChatbot = () => {
           value={selectedModel}
           onChange={(e) => setSelectedModel(e.target.value)}
         >
-          {AVAILABLE_MODELS.map(model => (
+          {AVAILABLE_MODELS.map((model) => (
             <option key={model.id} value={model.id}>
               {model.name}
             </option>
@@ -662,7 +675,7 @@ const BrainChatbot = () => {
               transition={{ duration: 0.3 }}
             >
               <MessageAvatar isUser={message.isUser}>
-                {message.isUser ? '👤' : '🧠'}
+                {message.isUser ? "👤" : "🧠"}
               </MessageAvatar>
               <MessageBubble isUser={message.isUser}>
                 <FormattedMessage text={message.text} isUser={message.isUser} />
