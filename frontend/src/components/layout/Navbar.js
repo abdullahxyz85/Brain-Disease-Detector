@@ -15,19 +15,21 @@ const NavContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 20px;
-  max-width: 1200px;
+  padding: 12px 30px;
+  max-width: 1400px;
   margin: 0 auto;
+  height: 70px;
 `;
 
 const Logo = styled(Link)`
   display: flex;
   align-items: center;
   text-decoration: none;
+  flex-shrink: 0;
   
   h1 {
     margin: 0;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     color: var(--primary-color);
     font-weight: 700;
   }
@@ -61,11 +63,19 @@ const MenuIcon = styled.div`
 const NavLinks = styled.div`
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 25px;
+  flex: 1;
+  justify-content: center;
+  margin: 0 40px;
+  
+  @media (max-width: 1024px) {
+    gap: 20px;
+    margin: 0 20px;
+  }
   
   @media (max-width: 768px) {
     position: absolute;
-    top: 60px;
+    top: 70px;
     left: ${({ isOpen }) => (isOpen ? '0' : '-100%')};
     flex-direction: column;
     width: 100%;
@@ -74,6 +84,23 @@ const NavLinks = styled.div`
     padding: 20px;
     transition: left 0.3s ease;
     z-index: 1;
+    margin: 0;
+    justify-content: flex-start;
+  }
+`;
+
+const MobileContainer = styled.div`
+  display: none;
+  
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
   }
 `;
 
@@ -82,7 +109,10 @@ const NavLink = styled(Link)`
   font-weight: 500;
   text-decoration: none;
   position: relative;
-  padding: 5px 0;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: color 0.3s ease;
   
   &::after {
     content: '';
@@ -104,10 +134,15 @@ const NavLink = styled(Link)`
     font-weight: 600;
   }
   
+  &:hover {
+    color: var(--primary-color);
+  }
+  
   @media (max-width: 768px) {
     margin: 10px 0;
     width: 100%;
     text-align: center;
+    font-size: 1rem;
   }
 `;
 
@@ -119,6 +154,7 @@ const ActionButton = styled(Link)`
   font-weight: 600;
   transition: all 0.3s ease;
   text-decoration: none;
+  white-space: nowrap;
   
   &:hover {
     transform: translateY(-3px);
@@ -130,6 +166,17 @@ const ActionButton = styled(Link)`
     margin-top: 20px;
     width: 100%;
     text-align: center;
+  }
+`;
+
+const AuthSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+  
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -246,7 +293,7 @@ const Navbar = () => {
     <NavContainer>
       <NavContent>
         <Logo to="/">
-          <h1>Brain<span>Detector</span></h1>
+          <h1>Synapse<span>Safari</span></h1>
         </Logo>
         
         <MenuIcon onClick={toggleMenu}>
@@ -274,10 +321,50 @@ const Navbar = () => {
           <NavLink to="/resources" className={isActive('/resources')} onClick={closeMenu}>
             Resources
           </NavLink>
-          <NavLink to="/alzheimer-detector" className="nav-link bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-2xl" style={{ marginLeft: "8px" }} onClick={closeMenu}>
+          <NavLink to="/alzheimer-detector" className={isActive('/alzheimer-detector')} onClick={closeMenu}>
             Alzheimer Detector
           </NavLink>
           
+          <MobileContainer>
+            {isAuthenticated ? (
+              <>
+                <ActionButton to="/results" onClick={closeMenu}>
+                  Your Results
+                </ActionButton>
+                <UserMenu>
+                  <UserAvatar onClick={toggleUserDropdown}>
+                    {getUserInitials()}
+                  </UserAvatar>
+                  
+                  {showUserDropdown && (
+                    <UserDropdown>
+                      <UserDropdownItem to="/profile" onClick={() => {closeUserDropdown(); closeMenu();}}>
+                        Profile
+                      </UserDropdownItem>
+                      <UserDropdownItem to="/settings" onClick={() => {closeUserDropdown(); closeMenu();}}>
+                        Settings
+                      </UserDropdownItem>
+                      <UserDropdownItem as="div" style={{ cursor: 'pointer' }} onClick={handleLogout}>
+                        Log out
+                      </UserDropdownItem>
+                    </UserDropdown>
+                  )}
+                </UserMenu>
+              </>
+            ) : (
+              <>
+                <NavLink to="/login" className={isActive('/login')} onClick={closeMenu}>
+                  Log In
+                </NavLink>
+                <ActionButton to="/signup" onClick={closeMenu}>
+                  Sign Up
+                </ActionButton>
+              </>
+            )}
+          </MobileContainer>
+        </NavLinks>
+        
+        <AuthSection>
           {isAuthenticated ? (
             <>
               <ActionButton to="/results" onClick={closeMenu}>
@@ -313,7 +400,7 @@ const Navbar = () => {
               </ActionButton>
             </>
           )}
-        </NavLinks>
+        </AuthSection>
       </NavContent>
     </NavContainer>
   );

@@ -225,24 +225,21 @@ const AIButton = styled(motion.button)`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 18px 40px;
+  padding: 14px 34px;
   border-radius: 50px;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
+  letter-spacing: 0.5px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.2);
   
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.6);
-  }
-
-  .ai-icon {
-    font-size: 1.3rem;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
   }
 `;
 
@@ -597,7 +594,7 @@ const Home = () => {
               stiffness: 100
             }}
           >
-            Early Detection for Better Brain Health
+            Synapse Safari
           </HeroTitle>
           
           <HeroSubtitle
@@ -610,7 +607,7 @@ const Home = () => {
               stiffness: 80
             }}
           >
-            Our interactive platform helps detect early signs of cognitive decline through engaging games, quizzes, and speech analysis. Start your brain health journey today.
+            Embark on an exciting journey through your mind with our interactive cognitive assessment platform. Discover insights about your brain health through engaging games, quizzes, and speech analysis.
           </HeroSubtitle>
           
           <ButtonGroup
@@ -628,7 +625,6 @@ const Home = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="ai-icon">🧠</span>
               Talk to AI Assistant
             </AIButton>
             <AnimatedPrimaryButton to="/games">Try Cognitive Games</AnimatedPrimaryButton>

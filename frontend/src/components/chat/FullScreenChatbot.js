@@ -903,7 +903,7 @@ const FullScreenChatbot = ({ onClose }) => {
         {messages.length === 0 ? (
           <WelcomeSection>
             <LogoContainer>🧠</LogoContainer>
-            <WelcomeTitle>Welcome to BrainHealth AI</WelcomeTitle>
+            <WelcomeTitle>Welcome to Synapse Safari AI</WelcomeTitle>
             <WelcomeSubtitle>
               Your intelligent assistant for brain health assessment and
               cognitive wellness guidance.
